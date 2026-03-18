@@ -10,24 +10,8 @@ export interface AuthResult {
 export class AuthService {
   private static readonly SESSION_KEY = 'admin_session'
   private static readonly SESSION_DURATION = 24 * 60 * 60 * 1000 // 24 hours
-
   static async authenticateAdmin(email: string, password: string): Promise<AuthResult> {
     try {
-      // First check environment variables for default admin
-      const defaultEmail = process.env.ADMIN_EMAIL || 'admin@system.com'
-      const defaultPassword = process.env.ADMIN_PASSWORD || 'admin123'
-
-      if (email === defaultEmail && password === defaultPassword) {
-        const mockAdmin = {
-          id: 'default-admin',
-          name: 'System Admin',
-          email: defaultEmail,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }
-        return { success: true, admin: mockAdmin }
-      }
-
       // Try database authentication
       const { data: admin, error } = await supabase
         .from('admins')
@@ -39,13 +23,13 @@ export class AuthService {
         return { success: false, error: 'Invalid email or password' }
       }
 
-      // In a real implementation, you would verify the hashed password
-      // For now, we'll use the default password
-      if (password === defaultPassword) {
-        return { success: true, admin }
+      // Verify the hashed password securely
+      const match = await bcrypt.compare(password, admin.password_hash)
+      if (!match) {
+        return { success: false, error: 'Invalid email or password' }
       }
 
-      return { success: false, error: 'Invalid email or password' }
+      return { success: true, admin }
     } catch (error: any) {
       return { success: false, error: error.message }
     }

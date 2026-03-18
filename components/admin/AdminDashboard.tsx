@@ -86,105 +86,108 @@ export default function AdminDashboard({ admin, onLogout }: AdminDashboardProps)
       default:
         return (
           <div className="space-y-8">
-            {/* Simple Database Test */}
-            <SimpleDbTest />
-
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="glass-card p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-slate-400 text-sm font-medium">Total Applications</p>
-                    <p className="text-3xl font-bold text-slate-50">{stats.total_users}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-white border border-[#4f46e5]/10 rounded-2xl p-6 shadow-[0_4px_20px_rgb(79,70,229,0.03)] text-center">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-[#ef4444]/10 rounded-xl flex items-center justify-center">
+                    <Users className="w-6 h-6 text-[#ef4444]" />
                   </div>
-                  <div className="w-12 h-12 bg-gradient-to-br from-[#93cfe2] to-[#7ec5db] rounded-xl flex items-center justify-center">
-                    <Users className="w-6 h-6 text-white" />
-                  </div>
-                </div>
-                <div className="mt-4 flex items-center text-green-400">
-                  <TrendingUp className="w-4 h-4 mr-1" />
-                  <span className="text-sm">Active candidates</span>
-                </div>
-              </div>
-
-              <div className="glass-card p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-slate-400 text-sm font-medium">Active Templates</p>
-                    <p className="text-3xl font-bold text-slate-50">{stats.total_templates}</p>
-                  </div>
-                  <div className="w-12 h-12 bg-gradient-to-br from-[#93cfe2] to-[#7ec5db] rounded-xl flex items-center justify-center">
-                    <FileText className="w-6 h-6 text-white" />
+                  <div className="text-right">
+                    <p className="text-slate-500 text-sm font-medium">Applications</p>
+                    <p className="text-3xl font-bold text-slate-900">{stats.total_users}</p>
                   </div>
                 </div>
-                <div className="mt-4 flex items-center text-[#93cfe2]">
-                  <FileCheck className="w-4 h-4 mr-1" />
-                  <span className="text-sm">HTML templates</span>
+                <div className="flex items-center text-slate-400 text-xs">
+                  <TrendingUp className="w-3 h-3 mr-1 text-green-500" />
+                  <span>Candidates database</span>
                 </div>
               </div>
 
-              <div className="glass-card p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-slate-400 text-sm font-medium">Generated Offers</p>
-                    <p className="text-3xl font-bold text-slate-50">{stats.total_offers}</p>
+              <div className="bg-white border border-[#4f46e5]/10 rounded-2xl p-6 shadow-[0_4px_20px_rgb(79,70,229,0.03)] text-center">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-[#4f46e5]/10 rounded-xl flex items-center justify-center">
+                    <FileText className="w-6 h-6 text-[#4f46e5]" />
                   </div>
-                  <div className="w-12 h-12 bg-gradient-to-br from-[#93cfe2] to-[#7ec5db] rounded-xl flex items-center justify-center">
-                    <Briefcase className="w-6 h-6 text-white" />
+                  <div className="text-right">
+                    <p className="text-slate-500 text-sm font-medium">Templates</p>
+                    <p className="text-3xl font-bold text-slate-900">{stats.total_templates}</p>
                   </div>
                 </div>
-                <div className="mt-4 flex items-center text-[#93cfe2]">
-                  <UserCheck className="w-4 h-4 mr-1" />
-                  <span className="text-sm">Successful offers</span>
+                <div className="flex items-center text-slate-400 text-xs">
+                  <FileCheck className="w-3 h-3 mr-1 text-[#4f46e5]" />
+                  <span>Offer letter layouts</span>
                 </div>
               </div>
 
-              <div className="glass-card p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-slate-400 text-sm font-medium">Pending Review</p>
-                    <p className="text-3xl font-bold text-slate-50">{stats.pending_users}</p>
+              <div className="bg-white border border-[#4f46e5]/10 rounded-2xl p-6 shadow-[0_4px_20px_rgb(79,70,229,0.03)] text-center">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center">
+                    <Briefcase className="w-6 h-6 text-indigo-600" />
                   </div>
-                  <div className="w-12 h-12 bg-gradient-to-br from-[#93cfe2] to-[#7ec5db] rounded-xl flex items-center justify-center">
-                    <Clock className="w-6 h-6 text-white" />
+                  <div className="text-right">
+                    <p className="text-slate-500 text-sm font-medium">Generated</p>
+                    <p className="text-3xl font-bold text-slate-900">{stats.total_offers}</p>
                   </div>
                 </div>
-                <div className="mt-4 flex items-center text-[#93cfe2]">
-                  <AlertCircle className="w-4 h-4 mr-1" />
-                  <span className="text-sm">Awaiting action</span>
+                <div className="flex items-center text-slate-400 text-xs">
+                  <UserCheck className="w-3 h-3 mr-1 text-indigo-500" />
+                  <span>Sent offer letters</span>
+                </div>
+              </div>
+
+              <div className="bg-white border border-[#4f46e5]/10 rounded-2xl p-6 shadow-[0_4px_20px_rgb(79,70,229,0.03)] text-center">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center">
+                    <Clock className="w-6 h-6 text-amber-600" />
+                  </div>
+                  <div className="text-right">
+                    <p className="text-slate-500 text-sm font-medium">Pending</p>
+                    <p className="text-3xl font-bold text-slate-900">{stats.pending_users}</p>
+                  </div>
+                </div>
+                <div className="flex items-center text-slate-400 text-xs">
+                  <AlertCircle className="w-3 h-3 mr-1 text-amber-500" />
+                  <span>Awaiting review</span>
                 </div>
               </div>
             </div>
 
             {/* Quick Actions */}
-            <div className="glass-card p-4">
-              <h3 className="text-xl font-semibold text-slate-50 mb-4">Quick Actions</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-white border border-[#4f46e5]/10 rounded-2xl p-6 shadow-[0_4px_20px_rgb(79,70,229,0.03)]">
+              <h3 className="text-xl font-bold text-slate-900 mb-6">Quick Actions</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <button
                   onClick={() => setActiveTab('users')}
-                  className="btn-secondary p-4 text-left hover:bg-slate-700/60 transition-colors"
+                  className="group bg-slate-50/50 border border-slate-100 p-6 rounded-2xl text-left hover:border-[#4f46e5]/30 hover:bg-white hover:shadow-lg transition-all duration-300"
                 >
-                  <Users className="w-6 h-6 text-purple-400 mb-2" />
-                  <h4 className="font-medium text-slate-200">Manage Applications</h4>
-                  <p className="text-sm text-slate-400">Review and process candidate applications</p>
+                  <div className="w-10 h-10 bg-[#ef4444]/10 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <Users className="w-5 h-5 text-[#ef4444]" />
+                  </div>
+                  <h4 className="font-bold text-slate-900 mb-1">Applications</h4>
+                  <p className="text-sm text-slate-500">Review and process candidate applications</p>
                 </button>
 
                 <button
                   onClick={() => setActiveTab('templates')}
-                  className="btn-secondary p-4 text-left hover:bg-slate-700/60 transition-colors"
+                  className="group bg-slate-50/50 border border-slate-100 p-6 rounded-2xl text-left hover:border-[#4f46e5]/30 hover:bg-white hover:shadow-lg transition-all duration-300"
                 >
-                  <FileText className="w-6 h-6 text-purple-400 mb-2" />
-                  <h4 className="font-medium text-slate-200">Manage Templates</h4>
-                  <p className="text-sm text-slate-400">Manage HTML templates</p>
+                  <div className="w-10 h-10 bg-[#4f46e5]/10 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <FileText className="w-5 h-5 text-[#4f46e5]" />
+                  </div>
+                  <h4 className="font-bold text-slate-900 mb-1">Offer Templates</h4>
+                  <p className="text-sm text-slate-500">Manage letter layouts and content</p>
                 </button>
 
                 <button
                   onClick={() => setActiveTab('roles')}
-                  className="btn-secondary p-4 text-left hover:bg-slate-700/60 transition-colors"
+                  className="group bg-slate-50/50 border border-slate-100 p-6 rounded-2xl text-left hover:border-[#4f46e5]/30 hover:bg-white hover:shadow-lg transition-all duration-300"
                 >
-                  <Settings className="w-6 h-6 text-purple-400 mb-2" />
-                  <h4 className="font-medium text-slate-200">Manage Roles & Tenures</h4>
-                  <p className="text-sm text-slate-400">Configure positions and durations</p>
+                  <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <Settings className="w-5 h-5 text-indigo-600" />
+                  </div>
+                  <h4 className="font-bold text-slate-900 mb-1">Company Setup</h4>
+                  <p className="text-sm text-slate-500">Configure roles, tenures, and settings</p>
                 </button>
               </div>
             </div>
@@ -196,50 +199,49 @@ export default function AdminDashboard({ admin, onLogout }: AdminDashboardProps)
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="glass-card m-4 p-4">
-        <div className="flex items-center justify-between">
+      <div className="bg-white border-b border-slate-100 px-6 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="relative w-12 h-12">
               <Image
-                src="/premiumlogo.png"
-                alt="Zyntiq Logo"
+                src="/logo.png"
+                alt="Uplern Logo"
                 fill
                 className="object-contain"
-                style={{ filter: 'drop-shadow(0 4px 20px rgba(139, 92, 246, 0.2))' }}
                 sizes="48px"
               />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-50">Welcome, {admin.name}!</h1>
-              <p className="text-slate-400">Zyntiq Admin Panel</p>
+              <h1 className="text-xl font-bold text-slate-900">Uplern Management</h1>
+              <p className="text-sm text-slate-400">Welcome back, {admin.name || 'Admin'}</p>
             </div>
           </div>
           <button
             onClick={onLogout}
-            className="btn-secondary flex items-center space-x-2 hover:bg-red-500/20 hover:border-red-500/40 hover:text-red-400 transition-colors"
+            className="flex items-center space-x-2 px-4 py-2 text-slate-500 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all font-medium border border-transparent hover:border-red-100"
           >
             <LogOut className="w-4 h-4" />
-            <span>Logout</span>
+            <span>Sign Out</span>
           </button>
         </div>
       </div>
 
       {/* Navigation */}
-      <div className="mx-4 mb-4">
-        <div className="glass-card p-2">
+      <div className="bg-slate-50/50 border-b border-slate-100 px-6">
+        <div className="max-w-7xl mx-auto">
           <nav className="flex space-x-1">
             {[
               { id: 'dashboard', label: 'Dashboard', icon: TrendingUp },
               { id: 'users', label: 'Applications', icon: Users },
               { id: 'templates', label: 'Templates', icon: FileText },
-              { id: 'roles', label: 'Roles & Tenures', icon: Settings }
+              { id: 'roles', label: 'Setup', icon: Settings }
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === tab.id
-                    ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/30'
+                className={`flex items-center space-x-2 px-6 py-4 text-sm font-semibold border-b-2 transition-all ${activeTab === tab.id
+                    ? 'border-[#4f46e5] text-[#4f46e5] bg-white'
+                    : 'border-transparent text-slate-400 hover:text-slate-600 hover:bg-slate-100/50'
                   }`}
               >
                 <tab.icon className="w-4 h-4" />
@@ -250,8 +252,8 @@ export default function AdminDashboard({ admin, onLogout }: AdminDashboardProps)
         </div>
       </div>
 
-      {/* Content */}
-      <div className="mx-4 pb-4">
+      {/* Content Area */}
+      <div className="max-w-7xl mx-auto p-6 md:p-8">
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <div className="loading-spinner"></div>

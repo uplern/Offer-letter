@@ -50,15 +50,15 @@ export default function ApplyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen bg-white">
       {/* Navbar */}
       <nav className="relative z-10 w-full py-4 lg:py-6 px-4 sm:px-6 md:px-8 lg:px-16">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Logo */}
           <div className="relative w-36 lg:w-40 h-10 lg:h-12">
             <Image
-              src="/premiumlogo.png"
-              alt="Zyntiq Logo"
+              src="/logo.png"
+              alt="Uplern Logo"
               fill
               className="object-contain"
               sizes="(max-width: 768px) 144px, (max-width: 1024px) 160px, 160px"
@@ -69,7 +69,7 @@ export default function ApplyPage() {
           {/* Back Button */}
           <button
             onClick={() => router.back()}
-            className="flex items-center text-slate-300 hover:text-[#93cfe2] transition-colors duration-300 font-medium"
+            className="flex items-center text-slate-600 hover:text-[#4f46e5] transition-colors duration-300 font-medium"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
             <span className="hidden sm:inline">Back</span>
@@ -85,10 +85,10 @@ export default function ApplyPage() {
           {/* Application Form */}
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="w-8 h-8 border-4 border-[#93cfe2] border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-8 h-8 border-4 border-[#4f46e5] border-t-transparent rounded-full animate-spin"></div>
             </div>
           ) : (
-            <div className="bg-slate-800/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 md:p-8">
+            <div className="bg-[#4f46e5]/[0.02] border border-[#4f46e5]/10 rounded-3xl p-6 md:p-8 shadow-[0_8px_30px_rgb(79,70,229,0.04)]">
               <ApplicationForm
                 roles={roles}
                 tenures={tenures}

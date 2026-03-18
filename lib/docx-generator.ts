@@ -6,7 +6,9 @@ async function readErrorMessage(response: Response): Promise<string> {
     const contentType = response.headers.get('content-type') || ''
     if (contentType.includes('application/json')) {
       const errorData: any = await response.json()
-      return errorData?.error || errorData?.message || JSON.stringify(errorData)
+      const mainError = errorData?.error || errorData?.message
+      const details = errorData?.details ? ` (${errorData.details})` : ''
+      return mainError ? `${mainError}${details}` : JSON.stringify(errorData)
     }
 
     const text = await response.text()

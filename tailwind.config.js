@@ -44,12 +44,12 @@ module.exports = {
           700: '#334155',
           800: '#1e293b',
           900: '#0f172a',
-          950: '#0f0f23',
+          950: '#000000',
         }
       },
       backgroundImage: {
-        'gradient-purple': 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%)',
-        'gradient-button': 'linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%)',
+        'gradient-purple': 'linear-gradient(135deg, #ffffff 0%, #f8fafc 25%, #f1f5f9 50%, #e2e8f0 75%, #f3e8ff 100%)',
+        'gradient-button': 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)',
       },
       animation: {
         'gradient-shift': 'gradientShift 20s ease infinite',

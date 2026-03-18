@@ -1,8 +1,11 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'Zyntiq Admin',
-  description: 'Zyntiq administration panel',
+  title: 'Uplern Admin',
+  description: 'Uplern administration panel',
+  icons: {
+    icon: '/favicon.png',
+  },
 }
 
 export default function RootLayout({
@@ -12,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <body className="min-h-screen bg-white">
         {children}
       </body>
     </html>

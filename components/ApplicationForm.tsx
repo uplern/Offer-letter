@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { supabase, Role, Tenure } from '@/lib/supabase'
 import { getAvailableTenuresForRole } from '@/lib/role-tenure-mapping'
 import { ServerFileUpload } from '@/lib/server-file-upload'
@@ -56,6 +56,10 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
   const [error, setError] = useState('')
   const [availableTenures, setAvailableTenures] = useState<Tenure[]>([])
   const [uploadProgress, setUploadProgress] = useState<{ [key: string]: boolean }>({})
+
+  // Generate a STABLE session ID once when the form mounts.
+  // Using this instead of a timestamp-at-submit means retries overwrite the same files.
+  const formSessionId = useRef<string>(`session_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -140,8 +144,8 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
         throw new Error('Please upload all required documents.')
       }
 
-      // Generate temporary user ID for file uploads
-      const tempUserId = `temp_${Date.now()}`
+      // Use the stable session ID — retries will overwrite the same files
+      const tempUserId = formSessionId.current
 
       // Upload files to Supabase Storage
       const fileUploads = [
@@ -233,12 +237,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
         userId: newUser.id
       })
 
-      // Trigger Google Drive Sync (Background)
-      fetch('/api/sync-to-drive', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: newUser.id })
-      }).catch(err => console.error('Drive sync failed:', err))
+
 
       setSuccess(true)
       setTimeout(() => {
@@ -261,22 +260,21 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
 
   return (
     <div className={inline ? "w-full" : "modal-overlay"} onClick={handleOverlayClick}>
-      <div className={inline ? "w-full max-w-3xl mx-auto p-4 md:p-8" : "glass-card w-full max-w-lg md:max-w-2xl max-h-[90vh] overflow-y-auto p-4 md:p-8 relative rounded-2xl"}>
+      <div className={inline ? "w-full max-w-2xl mx-auto p-4 md:p-6" : "bg-white border border-[#4f46e5]/10 w-full max-w-lg md:max-w-xl max-h-[90vh] overflow-y-auto p-4 md:p-6 relative rounded-2xl shadow-2xl"}>
 
         {/* Close Button */}
         {!inline && (
           <button
             onClick={onClose}
-            className="absolute top-4 md:top-6 right-4 md:right-6 text-slate-400 hover:text-[#93cfe2] transition-colors duration-300"
+            className="absolute top-4 md:top-6 right-4 md:right-6 text-slate-400 hover:text-[#4f46e5] transition-colors duration-300"
           >
             <X className="w-6 h-6" />
           </button>
         )}
 
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gradient mb-2">Join Zyntiq</h2>
-          <p className="text-slate-400">Submit your application</p>
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-slate-900 mb-1">Begin Your Journey</h2>
+          <p className="text-slate-400 text-sm font-light">Complete your professional enrollment below</p>
         </div>
 
         {/* Success Message */}
@@ -296,12 +294,12 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
 
           {/* Name Fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-200 font-medium mb-2">First Name</label>
+              <label className="block text-slate-700 text-sm font-medium mb-1.5">First Name</label>
               <input
                 type="text"
                 name="first_name"
@@ -313,7 +311,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
               />
             </div>
             <div>
-              <label className="block text-slate-200 font-medium mb-2">Last Name</label>
+              <label className="block text-slate-700 text-sm font-medium mb-1.5">Last Name</label>
               <input
                 type="text"
                 name="last_name"
@@ -328,7 +326,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
 
           {/* Parent Name */}
           <div>
-            <label className="block text-slate-200 font-medium mb-2">{"Father's Name"}</label>
+            <label className="block text-slate-700 text-sm font-medium mb-1.5">{"Father's Name"}</label>
             <input
               type="text"
               name="father_name"
@@ -343,7 +341,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
           {/* Contact Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-200 font-medium mb-2">Email Address</label>
+              <label className="block text-slate-700 text-sm font-medium mb-1.5">Email Address</label>
               <input
                 type="email"
                 name="email"
@@ -355,7 +353,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
               />
             </div>
             <div>
-              <label className="block text-slate-200 font-medium mb-2">Phone Number</label>
+              <label className="block text-slate-700 text-sm font-medium mb-1.5">Phone Number</label>
               <input
                 type="tel"
                 name="phone"
@@ -370,7 +368,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
 
           {/* College / University */}
           <div>
-            <label className="block text-slate-200 font-medium mb-2">College / University</label>
+            <label className="block text-slate-700 text-sm font-medium mb-1.5">College / University</label>
             <input
               type="text"
               name="college_name"
@@ -384,7 +382,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
 
           {/* Address */}
           <div>
-            <label className="block text-slate-200 font-medium mb-2">Address</label>
+            <label className="block text-slate-700 text-sm font-medium mb-1.5">Address</label>
             <textarea
               name="address"
               value={formData.address}
@@ -399,7 +397,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
           {/* Position and Duration */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-200 font-medium mb-2">Position</label>
+              <label className="block text-slate-700 text-sm font-medium mb-1.5">Position</label>
               <select
                 name="role_id"
                 value={formData.role_id}
@@ -416,7 +414,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
               </select>
             </div>
             <div>
-              <label className="block text-slate-200 font-medium mb-2">Duration</label>
+              <label className="block text-slate-700 text-sm font-medium mb-1.5">Duration</label>
               <select
                 name="tenure_id"
                 value={formData.tenure_id}
@@ -442,13 +440,13 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
 
           {/* Document Uploads */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-200 border-b border-slate-600 pb-2">
+            <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">
               Required Documents
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-slate-200 font-medium mb-2">
+                <label className="block text-slate-700 text-sm font-medium mb-1.5">
                   Aadhar Card (Front) <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -457,13 +455,13 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                   onChange={handleFileChange}
                   accept="image/*"
                   required
-                  className="w-full px-3 py-2 bg-slate-800/50 border border-slate-600 rounded-lg text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#93cfe2] file:text-slate-900 hover:file:bg-[#7ec5db] transition-colors"
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#4f46e5] file:text-white hover:file:bg-[#4338ca] transition-colors"
                 />
                 <p className="text-xs text-slate-400 mt-1">Upload a clear image (JPG/PNG)</p>
               </div>
 
               <div>
-                <label className="block text-slate-200 font-medium mb-2">
+                <label className="block text-slate-700 text-sm font-medium mb-1.5">
                   Aadhar Card (Back) <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -472,13 +470,13 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                   onChange={handleFileChange}
                   accept="image/*"
                   required
-                  className="w-full px-3 py-2 bg-slate-800/50 border border-slate-600 rounded-lg text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#93cfe2] file:text-slate-900 hover:file:bg-[#7ec5db] transition-colors"
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#4f46e5] file:text-white hover:file:bg-[#4338ca] transition-colors"
                 />
                 <p className="text-xs text-slate-400 mt-1">Upload a clear image (JPG/PNG)</p>
               </div>
 
               <div>
-                <label className="block text-slate-200 font-medium mb-2">
+                <label className="block text-slate-700 text-sm font-medium mb-1.5">
                   Candidate Photo <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -487,13 +485,13 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                   onChange={handleFileChange}
                   accept="image/*"
                   required
-                  className="w-full px-3 py-2 bg-slate-800/50 border border-slate-600 rounded-lg text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#93cfe2] file:text-slate-900 hover:file:bg-[#7ec5db] transition-colors"
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#4f46e5] file:text-white hover:file:bg-[#4338ca] transition-colors"
                 />
                 <p className="text-xs text-slate-400 mt-1">Passport size photo (JPG/PNG)</p>
               </div>
 
               <div>
-                <label className="block text-slate-200 font-medium mb-2">
+                <label className="block text-slate-700 text-sm font-medium mb-1.5">
                   College ID Card <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -502,13 +500,13 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                   onChange={handleFileChange}
                   accept="image/*"
                   required
-                  className="w-full px-3 py-2 bg-slate-800/50 border border-slate-600 rounded-lg text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#93cfe2] file:text-slate-900 hover:file:bg-[#7ec5db] transition-colors"
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#4f46e5] file:text-white hover:file:bg-[#4338ca] transition-colors"
                 />
                 <p className="text-xs text-slate-400 mt-1">Student ID card image (JPG/PNG)</p>
               </div>
 
               <div>
-                <label className="block text-slate-200 font-medium mb-2">
+                <label className="block text-slate-700 text-sm font-medium mb-1.5">
                   12th Marksheet <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -517,7 +515,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                   onChange={handleFileChange}
                   accept="image/*"
                   required
-                  className="w-full px-3 py-2 bg-slate-800/50 border border-slate-600 rounded-lg text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#93cfe2] file:text-slate-900 hover:file:bg-[#7ec5db] transition-colors"
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#4f46e5] file:text-white hover:file:bg-[#4338ca] transition-colors"
                 />
                 <p className="text-xs text-slate-400 mt-1">Class 12 certificate image (JPG/PNG)</p>
               </div>
@@ -525,30 +523,32 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
           </div>
 
           {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading || success}
-            className={`${loading ? 'btn-loading-shimmer' : 'btn-primary disabled:opacity-50'} w-full text-lg py-4 flex items-center justify-center space-x-3 disabled:cursor-not-allowed`}
-            aria-live="polite"
-            aria-busy={loading}
-          >
-            {loading ? (
-              <>
-                <div className="loading-spinner" aria-hidden="true"></div>
-                <span className="font-medium tracking-wide">Generating offer...</span>
-              </>
-            ) : success ? (
-              <>
-                <CheckCircle className="w-5 h-5" />
-                <span>Submitted Successfully</span>
-              </>
-            ) : (
-              <>
-                <Send className="w-5 h-5" />
-                <span>Get Offer Letter</span>
-              </>
-            )}
-          </button>
+          <div className="flex justify-center mt-8">
+            <button
+              type="submit"
+              disabled={loading || success}
+              className={`${loading ? 'btn-loading-shimmer' : 'btn-primary disabled:opacity-50'} w-full sm:w-auto sm:px-8 text-base py-3 flex items-center justify-center space-x-2 disabled:cursor-not-allowed`}
+              aria-live="polite"
+              aria-busy={loading}
+            >
+              {loading ? (
+                <>
+                  <div className="loading-spinner" aria-hidden="true"></div>
+                  <span className="font-medium tracking-wide">Generating offer...</span>
+                </>
+              ) : success ? (
+                <>
+                  <CheckCircle className="w-5 h-5" />
+                  <span>Submitted Successfully</span>
+                </>
+              ) : (
+                <>
+                  <Send className="w-5 h-5" />
+                  <span className="font-semibold">Submit Details</span>
+                </>
+              )}
+            </button>
+          </div>
         </form>
       </div>
     </div>

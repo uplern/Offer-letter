@@ -60,7 +60,6 @@ export default function LandingPage() {
   const [roles, setRoles] = useState<Role[]>([])
   const [tenures, setTenures] = useState<Tenure[]>([])
   const [loading, setLoading] = useState(true)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     fetchData()
@@ -94,15 +93,15 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen w-full bg-white">
       {/* Navbar merged with hero */}
-      <nav className="relative z-10 w-full py-3 lg:py-4 px-4 sm:px-6 md:px-8 lg:px-16 overflow-x-hidden">
+      <nav className="relative z-10 w-full py-3 lg:py-4 px-4 sm:px-6 md:px-8 lg:px-16">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Logo */}
           <div className="relative w-28 sm:w-36 lg:w-40 h-10 lg:h-12 min-w-0">
             <Image
-              src="/premiumlogo.png"
-              alt="Zyntiq Logo"
+              src="/logo.png"
+              alt="Uplern Logo"
               fill
               className="object-contain"
               priority
@@ -110,36 +109,23 @@ export default function LandingPage() {
             />
           </div>
 
-          {/* Menu Button - All Devices */}
+          {/* Admin Login Icon */}
           <div className="flex items-center">
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2.5 text-slate-300 hover:text-[#93cfe2] transition-colors duration-300 rounded-lg hover:bg-slate-800/60"
-              aria-label="Open menu"
+              onClick={() => router.push('/admin/login')}
+              className="group p-2.5 text-slate-500 hover:text-[#4f46e5] transition-all duration-300 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 flex items-center space-x-2"
+              title="Admin Login"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              <Shield className="w-5 h-5" />
+              <span className="text-sm font-medium hidden sm:inline-block">Admin</span>
             </button>
           </div>
         </div>
-
-        {/* Compact Dropdown Menu - All Devices */}
-        {mobileMenuOpen && (
-          <div className="absolute top-full right-4 md:right-8 bg-slate-900/95 backdrop-blur-md border border-slate-700/50 shadow-2xl rounded-xl z-20">
-            <div className="py-2 min-w-[180px]">
-              <button
-                onClick={() => { router.push('/admin/login'); setMobileMenuOpen(false) }}
-                className="w-full text-left px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors"
-              >
-                Admin
-              </button>
-            </div>
-          </div>
-        )}
       </nav>
 
       {/* Hero Section */}
-      <section className="px-4 overflow-x-hidden min-h-screen flex items-center pt-16 sm:pt-20 md:pt-8 -mt-10 lg:mt-0">
-        <div className="max-w-7xl mx-auto w-full overflow-hidden">
+      <section className="px-4 min-h-screen flex items-center pt-16 sm:pt-20 md:pt-8 -mt-10 lg:mt-0">
+        <div className="max-w-7xl mx-auto w-full">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center overflow-hidden min-w-0">
             {/* Left Side - Content */}
             <motion.div
@@ -150,22 +136,22 @@ export default function LandingPage() {
             >
               <motion.div className="space-y-6 break-words" variants={fadeInUp}>
                 <motion.h1
-                  className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight"
+                  className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight"
                   variants={fadeInUp}
                 >
-                  Build Your Future with{' '}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#93cfe2] via-[#93cfe2] to-[#93cfe2]">
-                    Zyntiq
+                  Elevate Your Career with{' '}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ef4444] to-[#4f46e5]">
+                    Uplern
                   </span>
                 </motion.h1>
 
                 <motion.p
-                  className="text-xl text-slate-300 leading-relaxed max-w-xl break-words"
+                  className="text-xl text-slate-500 font-light leading-relaxed max-w-xl break-words"
                   variants={fadeInUp}
                 >
-                  Join our comprehensive internship and career development programs.
-                  Gain real-world experience, professional mentorship, and the skills
-                  that top companies are looking for.
+                  Unlock your potential through our industry-leading internship
+                  and professional growth initiatives. Master the essential skills
+                  sought by global leaders through hands-on mentorship.
                 </motion.p>
               </motion.div>
 
@@ -175,7 +161,7 @@ export default function LandingPage() {
               >
                 <button
                   onClick={() => router.push('/apply')}
-                  className="group w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-[#93cfe2] to-[#93cfe2] hover:from-[#7ec5db] hover:to-[#7ec5db] text-slate-900 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-[rgba(147,207,226,0.25)] flex items-center justify-center"
+                  className="group w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-[#ef4444] to-[#4f46e5] hover:from-[#dc2626] hover:to-[#4338ca] text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-[rgba(79,70,229,0.25)] flex items-center justify-center"
                 >
                   <span>Offer Letter</span>
                   <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -193,8 +179,8 @@ export default function LandingPage() {
               variants={fadeInRight}
             >
               <Image
-                src="/desk.png"
-                alt="Professional workspace - Join Zyntiq career development"
+                src="/lp1.svg"
+                alt="Professional workspace - Join Uplern career development"
                 fill
                 className="object-contain"
                 priority
@@ -208,10 +194,10 @@ export default function LandingPage() {
       {/* About Section */}
       <motion.section
         id="about"
-        className="py-20 px-4 bg-slate-800/30 overflow-x-hidden"
+        className="py-24 px-4 bg-slate-50/50 will-change-transform"
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
+        viewport={{ once: true, amount: 0.2 }}
         variants={fadeInUp}
       >
         <div className="max-w-7xl mx-auto">
@@ -223,22 +209,22 @@ export default function LandingPage() {
 
 
               <motion.h2
-                className="text-3xl md:text-4xl font-bold text-white"
+                className="text-3xl md:text-4xl font-bold text-slate-900"
                 variants={fadeInUp}
               >
-                Empowering the Next Generation of{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#93cfe2] to-[#93cfe2]">
-                  Professionals
+                Pioneering Professional Excellence for{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ef4444] to-[#4f46e5]">
+                  Future Leaders
                 </span>
               </motion.h2>
 
               <motion.p
-                className="text-lg text-slate-300 leading-relaxed"
+                className="text-lg text-slate-500 font-light leading-relaxed"
                 variants={fadeInUp}
               >
-                At Zyntiq, we bridge the gap between academic learning and professional excellence.
-                Our comprehensive programs are designed to provide hands-on experience, industry insights,
-                and the practical skills that today&apos;s employers demand.
+                Uplern serves as the vital bridge between academic foundations and
+                corporate success. Our ecosystem is meticulously designed to
+                provide the practical insights today&apos;s digital economy demands.
               </motion.p>
 
               <motion.div
@@ -249,14 +235,14 @@ export default function LandingPage() {
                   className="flex items-start space-x-3"
                   variants={fadeInLeft}
                 >
-                  <div className="w-6 h-6 bg-[#93cfe2] rounded-full flex items-center justify-center mt-1">
+                  <div className="w-6 h-6 bg-[#4f46e5] rounded-full flex items-center justify-center mt-1">
                     <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-white">Industry-Relevant Training</h4>
-                    <p className="text-slate-400">Learn skills that are in high demand across various industries</p>
+                    <h4 className="font-semibold text-slate-900">Industry-Relevant Training</h4>
+                    <p className="text-slate-500">Learn skills that are in high demand across various industries</p>
                   </div>
                 </motion.div>
 
@@ -264,14 +250,14 @@ export default function LandingPage() {
                   className="flex items-start space-x-3"
                   variants={fadeInLeft}
                 >
-                  <div className="w-6 h-6 bg-[#93cfe2] rounded-full flex items-center justify-center mt-1">
+                  <div className="w-6 h-6 bg-[#4f46e5] rounded-full flex items-center justify-center mt-1">
                     <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-white">Expert Mentorship</h4>
-                    <p className="text-slate-400">Get guidance from experienced professionals in your field</p>
+                    <h4 className="font-semibold text-slate-900">Expert Mentorship</h4>
+                    <p className="text-slate-500">Get guidance from experienced professionals in your field</p>
                   </div>
                 </motion.div>
 
@@ -279,14 +265,14 @@ export default function LandingPage() {
                   className="flex items-start space-x-3"
                   variants={fadeInLeft}
                 >
-                  <div className="w-6 h-6 bg-[#93cfe2] rounded-full flex items-center justify-center mt-1">
+                  <div className="w-6 h-6 bg-[#4f46e5] rounded-full flex items-center justify-center mt-1">
                     <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-white">Career Placement Support</h4>
-                    <p className="text-slate-400">Comprehensive support to help you land your dream job</p>
+                    <h4 className="font-semibold text-slate-900">Career Placement Support</h4>
+                    <p className="text-slate-500">Comprehensive support to help you land your dream job</p>
                   </div>
                 </motion.div>
               </motion.div>
@@ -297,32 +283,32 @@ export default function LandingPage() {
               variants={staggerContainer}
             >
               <motion.div
-                className="bg-gradient-to-br from-[#93cfe2]/20 to-[#93cfe2]/10 border border-[#93cfe2]/30 rounded-2xl p-6 text-center"
+                className="bg-white border border-slate-100 rounded-2xl p-6 text-center shadow-[0_4px_20px_rgb(0,0,0,0.03)]"
                 variants={scaleIn}
               >
-                <div className="text-3xl font-bold text-white mb-2">500+</div>
-                <div className="text-slate-300">Professionals Trained</div>
+                <div className="text-3xl font-bold text-slate-900 mb-2">500+</div>
+                <div className="text-slate-500">Professionals Trained</div>
               </motion.div>
               <motion.div
-                className="bg-gradient-to-br from-[#93cfe2]/20 to-[#93cfe2]/10 border border-[#93cfe2]/30 rounded-2xl p-6 text-center"
+                className="bg-white border border-slate-100 rounded-2xl p-6 text-center shadow-[0_4px_20px_rgb(0,0,0,0.03)]"
                 variants={scaleIn}
               >
-                <div className="text-3xl font-bold text-white mb-2">95%</div>
-                <div className="text-slate-300">Success Rate</div>
+                <div className="text-3xl font-bold text-slate-900 mb-2">95%</div>
+                <div className="text-slate-500">Success Rate</div>
               </motion.div>
               <motion.div
-                className="bg-gradient-to-br from-[#93cfe2]/20 to-[#93cfe2]/10 border border-[#93cfe2]/30 rounded-2xl p-6 text-center"
+                className="bg-white border border-slate-100 rounded-2xl p-6 text-center shadow-[0_4px_20px_rgb(0,0,0,0.03)]"
                 variants={scaleIn}
               >
-                <div className="text-3xl font-bold text-white mb-2">50+</div>
-                <div className="text-slate-300">Partner Companies</div>
+                <div className="text-3xl font-bold text-slate-900 mb-2">50+</div>
+                <div className="text-slate-500">Partner Companies</div>
               </motion.div>
               <motion.div
-                className="bg-gradient-to-br from-[#93cfe2]/20 to-[#93cfe2]/10 border border-[#93cfe2]/30 rounded-2xl p-6 text-center"
+                className="bg-white border border-slate-100 rounded-2xl p-6 text-center shadow-[0_4px_20px_rgb(0,0,0,0.03)]"
                 variants={scaleIn}
               >
-                <div className="text-3xl font-bold text-white mb-2">24/7</div>
-                <div className="text-slate-300">Support Available</div>
+                <div className="text-3xl font-bold text-slate-900 mb-2">24/7</div>
+                <div className="text-slate-500">Support Available</div>
               </motion.div>
             </motion.div>
           </div>
@@ -332,10 +318,10 @@ export default function LandingPage() {
       {/* Available Positions */}
       <motion.section
         id="programs"
-        className="py-20 px-4 overflow-x-hidden"
+        className="py-20 px-4 will-change-transform"
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: true, amount: 0.1 }}
         variants={fadeInUp}
       >
         <div className="max-w-7xl mx-auto">
@@ -343,17 +329,17 @@ export default function LandingPage() {
             className="text-center mb-16 break-words"
             variants={fadeInUp}
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Available Opportunities
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4 tracking-tight">
+              Strategic Opportunities
             </h2>
-            <p className="text-xl text-slate-300 max-w-2xl mx-auto">
-              Choose from our carefully designed programs that match your career goals
+            <p className="text-xl text-slate-400 font-light max-w-2xl mx-auto">
+              Select a specialized track tailored to your professional trajectory
             </p>
           </motion.div>
 
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="w-8 h-8 border-4 border-[#93cfe2] border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-8 h-8 border-4 border-[#4f46e5] border-t-transparent rounded-full animate-spin"></div>
             </div>
           ) : (
             <motion.div
@@ -363,49 +349,51 @@ export default function LandingPage() {
               {roles.map((role, index) => (
                 <motion.div
                   key={role.id}
-                  className="bg-slate-800/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 hover:border-[#93cfe2]/50 transition-all duration-300 group hover:transform hover:scale-105"
+                  className="bg-white border border-slate-100 rounded-3xl p-8 hover:border-[#4f46e5]/30 transition-all duration-500 flex flex-col items-center text-center shadow-[0_10px_40px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)]"
                   variants={scaleIn}
                 >
-                  <div className="flex items-center mb-6">
-                    <div className="w-14 h-14 bg-gradient-to-br from-[#93cfe2] to-[#93cfe2] rounded-xl flex items-center justify-center mr-4 group-hover:shadow-lg group-hover:shadow-[rgba(147,207,226,0.25)] transition-all duration-300">
-                      {index === 0 && <Briefcase className="w-7 h-7 text-white" />}
-                      {index === 1 && <TrendingUp className="w-7 h-7 text-white" />}
-                      {index === 2 && <Globe className="w-7 h-7 text-white" />}
-                      {index > 2 && <Award className="w-7 h-7 text-white" />}
+                  <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left w-full mb-6">
+                    <div className="w-16 h-16 bg-gradient-to-br from-[#ef4444] to-[#4f46e5] rounded-2xl flex items-center justify-center mb-4 sm:mb-0 sm:mr-4 flex-shrink-0 shadow-md shadow-[#4f46e5]/20">
+                      {index === 0 && <Briefcase className="w-8 h-8 text-white" />}
+                      {index === 1 && <TrendingUp className="w-8 h-8 text-white" />}
+                      {index === 2 && <Globe className="w-8 h-8 text-white" />}
+                      {index > 2 && <Award className="w-8 h-8 text-white" />}
                     </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white group-hover:text-[#93cfe2] transition-colors">
+                    <div className="flex flex-col justify-center min-h-[4rem]">
+                      <h3 className="text-xl font-bold text-slate-900 mb-1">
                         {role.name}
                       </h3>
-                      <p className="text-slate-400">Position Code: {role.code}</p>
+                      <p className="text-slate-400 text-sm">Position Code: {role.code}</p>
                     </div>
                   </div>
 
-                  <div className="space-y-4 mb-6">
-                    <div className="flex items-center text-slate-300">
-                      <Clock className="w-5 h-5 mr-3 text-[#93cfe2]" />
-                      <span>Flexible Duration Options</span>
+                  <div className="space-y-4 mb-8 w-full text-left">
+                    <div className="flex items-center text-slate-600">
+                      <Clock className="w-5 h-5 mr-3 text-[#ef4444] flex-shrink-0" />
+                      <span className="text-sm sm:text-base">Flexible Duration Options</span>
                     </div>
-                    <div className="flex items-center text-slate-300">
-                      <Users className="w-5 h-5 mr-3 text-[#93cfe2]" />
-                      <span>Collaborative Environment</span>
+                    <div className="flex items-center text-slate-600">
+                      <Users className="w-5 h-5 mr-3 text-[#ef4444] flex-shrink-0" />
+                      <span className="text-sm sm:text-base">Collaborative Environment</span>
                     </div>
-                    <div className="flex items-center text-slate-300">
-                      <GraduationCap className="w-5 h-5 mr-3 text-[#93cfe2]" />
-                      <span>Professional Mentorship</span>
+                    <div className="flex items-center text-slate-600">
+                      <GraduationCap className="w-5 h-5 mr-3 text-[#4f46e5] flex-shrink-0" />
+                      <span className="text-sm sm:text-base">Professional Mentorship</span>
                     </div>
-                    <div className="flex items-center text-slate-300">
-                      <Award className="w-5 h-5 mr-3 text-[#93cfe2]" />
-                      <span>Industry Recognition</span>
+                    <div className="flex items-center text-slate-600">
+                      <Award className="w-5 h-5 mr-3 text-[#4f46e5] flex-shrink-0" />
+                      <span className="text-sm sm:text-base">Industry Recognition</span>
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => router.push('/apply')}
-                    className="w-full py-3 bg-slate-700 hover:bg-[#93cfe2] text-white font-semibold rounded-xl transition-all duration-300 group-hover:bg-[#93cfe2] hover:text-slate-900"
-                  >
-                    Apply Now
-                  </button>
+                  <div className="mt-auto w-full">
+                    <button
+                      onClick={() => router.push('/apply')}
+                      className="w-full py-3.5 bg-slate-50 border border-slate-100 text-slate-900 font-semibold rounded-2xl transition-all duration-300 hover:bg-[#4f46e5] hover:border-[#4f46e5] hover:text-white"
+                    >
+                      Apply Now
+                    </button>
+                  </div>
                 </motion.div>
               ))}
             </motion.div>
@@ -416,10 +404,10 @@ export default function LandingPage() {
       {/* Program Durations */}
       <motion.section
         id="durations"
-        className="py-20 px-4 bg-slate-800/30 overflow-x-hidden"
+        className="py-24 px-4 bg-white will-change-transform"
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
+        viewport={{ once: true, amount: 0.2 }}
         variants={fadeInUp}
       >
         <div className="max-w-7xl mx-auto">
@@ -427,13 +415,13 @@ export default function LandingPage() {
             {/* Left Side - Content */}
             <motion.div className="min-w-0" variants={staggerContainer}>
               <motion.h3
-                className="text-3xl md:text-4xl font-bold text-white mb-4"
+                className="text-3xl md:text-4xl font-bold text-slate-900 mb-4 tracking-tight"
                 variants={fadeInLeft}
               >
-                Program <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#93cfe2] to-[#93cfe2]">Durations</span>
+                Program <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ef4444] to-[#4f46e5]">Durations</span>
               </motion.h3>
               <motion.p
-                className="text-slate-300 mb-8 max-w-xl"
+                className="text-slate-500 font-light mb-8 max-w-xl"
                 variants={fadeInLeft}
               >
                 Pick a duration that fits your schedule. All options include mentorship, deliverables, and a completion letter.
@@ -446,7 +434,7 @@ export default function LandingPage() {
                 {tenures.map((tenure) => (
                   <motion.div
                     key={tenure.id}
-                    className="px-5 py-2.5 bg-slate-800/60 border border-slate-700/60 rounded-full text-slate-200 hover:border-[#93cfe2]/60 hover:text-white transition-colors"
+                    className="px-5 py-2.5 bg-slate-50 border border-slate-100 rounded-full text-slate-600 hover:border-[#4f46e5]/30 hover:text-[#4f46e5] transition-colors"
                     variants={scaleIn}
                   >
                     {tenure.label}
@@ -459,24 +447,24 @@ export default function LandingPage() {
                 variants={staggerContainer}
               >
                 <motion.div
-                  className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-slate-300"
+                  className="bg-slate-50 border border-slate-100 rounded-xl p-4 text-slate-600"
                   variants={scaleIn}
                 >
-                  <div className="text-white font-semibold mb-1">Guided</div>
+                  <div className="text-slate-900 font-semibold mb-1">Guided</div>
                   <div className="text-sm">Weekly mentor check-ins</div>
                 </motion.div>
                 <motion.div
-                  className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-slate-300"
+                  className="bg-slate-50 border border-slate-100 rounded-xl p-4 text-slate-600"
                   variants={scaleIn}
                 >
-                  <div className="text-white font-semibold mb-1">Hands-on</div>
+                  <div className="text-slate-900 font-semibold mb-1">Hands-on</div>
                   <div className="text-sm">Real deliverables to ship</div>
                 </motion.div>
                 <motion.div
-                  className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-slate-300"
+                  className="bg-slate-50 border border-slate-100 rounded-xl p-4 text-slate-600"
                   variants={scaleIn}
                 >
-                  <div className="text-white font-semibold mb-1">Certificate</div>
+                  <div className="text-slate-900 font-semibold mb-1">Certificate</div>
                   <div className="text-sm">Letter upon completion</div>
                 </motion.div>
               </motion.div>
@@ -488,7 +476,7 @@ export default function LandingPage() {
               variants={fadeInRight}
             >
               <Image
-                src="/dec.png"
+                src="/lp2.svg"
                 alt="Program durations"
                 fill
                 className="object-contain"

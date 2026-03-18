@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import Image from 'next/image'
-import { supabase, User } from '@/lib/supabase'
+import { supabase, Candidate } from '@/lib/supabase'
 import { generateOfferLetter, OfferLetterData } from '@/lib/docx-generator'
 import {
   Eye,
@@ -15,15 +15,16 @@ import {
   RefreshCw,
   AlertCircle,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  FileText
 } from 'lucide-react'
 
 export default function UserManagement() {
-  const [users, setUsers] = useState<User[]>([])
+  const [users, setUsers] = useState<Candidate[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
-  const [selectedUser, setSelectedUser] = useState<User | null>(null)
+  const [selectedUser, setSelectedUser] = useState<Candidate | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(25)
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set())
@@ -96,8 +97,6 @@ export default function UserManagement() {
     }
   }
 
-
-
   const filteredUsers = users.filter(user => {
     const matchesSearch =
       user.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -112,7 +111,7 @@ export default function UserManagement() {
   // Group users by year and month
   interface GroupedUsers {
     [year: string]: {
-      [month: string]: User[]
+      [month: string]: Candidate[]
     }
   }
 
@@ -153,7 +152,6 @@ export default function UserManagement() {
   }
 
   // Pagination logic
-  const totalPages = Math.ceil(filteredUsers.length / pageSize)
   const startIndex = (currentPage - 1) * pageSize
   const endIndex = startIndex + pageSize
 
@@ -166,35 +164,35 @@ export default function UserManagement() {
     switch (status) {
       case 'pending':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-600 border border-amber-100">
             <Clock className="w-3 h-3 mr-1" />
             Pending
           </span>
         )
       case 'approved':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-50 text-green-600 border border-green-100">
             <CheckCircle className="w-3 h-3 mr-1" />
             Approved
           </span>
         )
       case 'rejected':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-50 text-red-600 border border-red-100">
             <XCircle className="w-3 h-3 mr-1" />
             Rejected
           </span>
         )
       case 'offer_generated':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-500/20 text-purple-400 border border-purple-500/30">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#4f46e5]/10 text-[#4f46e5] border border-[#4f46e5]/20">
             <FileDown className="w-3 h-3 mr-1" />
-            Offer Generated
+            Offer Ready
           </span>
         )
       default:
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-500/20 text-slate-400 border border-slate-500/30">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-50 text-slate-500 border border-slate-200">
             {status}
           </span>
         )
@@ -215,7 +213,7 @@ export default function UserManagement() {
       },
       {
         label: "Father's Name",
-        value: selectedUser.father_name || '—',
+        value: selectedUser.father_name || '-',
       },
       {
         label: 'Email',
@@ -224,23 +222,23 @@ export default function UserManagement() {
       },
       {
         label: 'Phone',
-        value: selectedUser.phone || '—',
+        value: selectedUser.phone || '-',
       },
       {
         label: 'Position',
-        value: selectedUser.role?.name || '—',
+        value: selectedUser.role?.name || '-',
       },
       {
         label: 'Duration',
-        value: selectedUser.tenure?.label || '—',
+        value: selectedUser.tenure?.label || '-',
       },
       {
         label: 'College / University',
-        value: selectedUser.college_name || '—',
+        value: selectedUser.college_name || '-',
       },
       {
         label: 'Address',
-        value: selectedUser.address || '—',
+        value: selectedUser.address || '-',
         fullWidth: true,
         valueClassName: 'whitespace-pre-wrap',
       },
@@ -263,8 +261,8 @@ export default function UserManagement() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-50">Application Management</h2>
-          <p className="text-slate-400">Review and manage candidate applications</p>
+          <h2 className="text-2xl font-bold text-slate-900">Application Management</h2>
+          <p className="text-slate-500 font-light">Review and process Uplern candidates</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -278,7 +276,7 @@ export default function UserManagement() {
       </div>
 
       {/* Filters */}
-      <div className="glass-card p-3">
+      <div className="bg-white border border-[#4f46e5]/10 rounded-2xl p-4 shadow-sm">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
@@ -298,7 +296,7 @@ export default function UserManagement() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="input-field w-full pl-10 appearance-none"
+                className="input-field w-full pl-10 appearance-none bg-white cursor-pointer"
               >
                 <option value="all">All Status</option>
                 <option value="pending">Pending</option>
@@ -312,7 +310,7 @@ export default function UserManagement() {
       </div>
 
       {/* Users Grouped by Month/Year */}
-      <div className="glass-card overflow-hidden">
+      <div className="bg-white border border-[#4f46e5]/10 rounded-2xl overflow-hidden shadow-sm">
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <div className="loading-spinner"></div>
@@ -320,49 +318,41 @@ export default function UserManagement() {
         ) : (
           <div className="space-y-4 p-4">
             {Object.keys(groupedUsers).sort((a, b) => parseInt(b) - parseInt(a)).map(year => (
-              <div key={year} className="space-y-2">
-                {/* Year Header */}
-                <h3 className="text-xl font-bold text-slate-50 mb-3">{year}</h3>
-
+              <div key={year} className="space-y-4">
+                <h3 className="text-xl font-bold text-slate-900 px-2">{year}</h3>
                 {Object.keys(groupedUsers[year]).map(month => {
                   const groupKey = `${year}-${month}`
                   const isExpanded = expandedGroups.has(groupKey)
                   const isCurrentMonth = year === currentYear && month === currentMonth
                   const monthUsers = groupedUsers[year][month]
-
-                  // Apply pagination to current expanded group
-                  const displayUsers = isExpanded
-                    ? monthUsers.slice(startIndex, endIndex)
-                    : []
+                  const displayUsers = isExpanded ? monthUsers.slice(startIndex, endIndex) : []
 
                   return (
-                    <div key={month} className="border border-slate-700 rounded-lg overflow-hidden">
-                      {/* Month Header - Clickable */}
+                    <div key={month} className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
                       <button
                         onClick={() => toggleGroup(year, month)}
-                        className="w-full flex items-center justify-between p-4 bg-slate-800/50 hover:bg-slate-800/70 transition-colors"
+                        className="w-full flex items-center justify-between p-4 bg-slate-50/50 hover:bg-slate-100 transition-colors"
                       >
                         <div className="flex items-center space-x-3">
                           {isExpanded ? (
-                            <ChevronDown className="w-5 h-5 text-purple-400" />
+                            <ChevronDown className="w-5 h-5 text-[#4f46e5]" />
                           ) : (
                             <ChevronRight className="w-5 h-5 text-slate-400" />
                           )}
-                          <h4 className="text-lg font-semibold text-slate-200">
+                          <h4 className="text-lg font-bold text-slate-800">
                             {month}
                             {isCurrentMonth && (
-                              <span className="ml-2 text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded-full border border-purple-500/30">
+                               <span className="ml-2 text-xs bg-[#4f46e5]/10 text-[#4f46e5] px-2 py-1 rounded-full border border-[#4f46e5]/20 font-medium">
                                 Current
                               </span>
                             )}
                           </h4>
                         </div>
-                        <span className="text-sm text-slate-400">
+                        <span className="text-sm font-medium text-slate-500">
                           {monthUsers.length} {monthUsers.length === 1 ? 'applicant' : 'applicants'}
                         </span>
                       </button>
 
-                      {/* Collapsible Content */}
                       {isExpanded && (
                         <div className="overflow-x-auto">
                           <table className="professional-table w-full">
@@ -378,67 +368,65 @@ export default function UserManagement() {
                             </thead>
                             <tbody>
                               {displayUsers.map((user) => (
-                                <tr key={user.id}>
+                                <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
                                   <td>
                                     <div>
-                                      <div className="font-medium text-slate-200">
+                                      <div className="font-semibold text-slate-900">
                                         {user.first_name} {user.last_name}
                                       </div>
-                                      <div className="text-sm text-slate-400">{user.email}</div>
+                                      <div className="text-sm text-slate-500">{user.email}</div>
                                     </div>
                                   </td>
                                   <td>
-                                    <span className="text-slate-300">
+                                    <span className="text-slate-700 font-medium">
                                       {user.role?.name || 'N/A'}
                                     </span>
                                   </td>
                                   <td className="hidden md:table-cell">
-                                    <span className="text-slate-300">
+                                    <span className="text-slate-600">
                                       {user.tenure?.label || 'N/A'}
                                     </span>
                                   </td>
                                   <td>{getStatusBadge(user.status)}</td>
                                   <td className="hidden sm:table-cell">
-                                    <span className="text-slate-400">
-                                      {new Date(user.created_at).toLocaleDateString()}
+                                    <span className="text-slate-500 text-sm">
+                                      {new Date(user.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
                                     </span>
                                   </td>
                                   <td>
-                                    <div className="flex items-center space-x-2">
+                                    <div className="flex items-center space-x-1">
                                       <button
                                         onClick={() => setSelectedUser(user)}
-                                        className="p-2 text-slate-400 hover:text-purple-400 transition-colors"
+                                        className="p-2 text-slate-400 hover:text-[#4f46e5] transition-colors rounded-lg hover:bg-[#4f46e5]/5"
                                         title="View Details"
                                       >
-                                        <Eye className="w-4 h-4" />
+                                        <Eye className="w-5 h-5" />
                                       </button>
-
                                       {user.status === 'pending' && (
                                         <>
                                           <button
                                             onClick={() => updateUserStatus(user.id, 'approved')}
-                                            className="p-2 text-slate-400 hover:text-green-400 transition-colors hidden sm:inline-block"
+                                            className="p-2 text-slate-400 hover:text-green-500 transition-colors rounded-lg hover:bg-green-50 hidden sm:inline-block"
                                             title="Approve"
                                           >
-                                            <CheckCircle className="w-4 h-4" />
+                                            <CheckCircle className="w-5 h-5" />
                                           </button>
                                           <button
                                             onClick={() => updateUserStatus(user.id, 'rejected')}
-                                            className="p-2 text-slate-400 hover:text-red-400 transition-colors hidden sm:inline-block"
+                                            className="p-2 text-slate-400 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50 hidden sm:inline-block"
                                             title="Reject"
                                           >
-                                            <XCircle className="w-4 h-4" />
+                                            <XCircle className="w-5 h-5" />
                                           </button>
                                         </>
                                       )}
-
                                       {user.status === 'approved' && (
                                         <button
                                           onClick={() => generateOffer(user.id)}
-                                          className="p-2 text-slate-400 hover:text-purple-400 transition-colors hidden sm:inline-block"
+                                          className="p-2 text-slate-400 hover:text-[#4f46e5] transition-colors rounded-lg hover:bg-[#4f46e5]/5 hidden sm:inline-block"
                                           title="Generate Offer"
                                         >
-                                          <FileDown className="w-4 h-4" />
+                                          <FileDown className="w-5 h-5" />
                                         </button>
                                       )}
                                     </div>
@@ -448,54 +436,46 @@ export default function UserManagement() {
                             </tbody>
                           </table>
 
-                          {/* Pagination for this month */}
                           {monthUsers.length > pageSize && (
-                            <div className="p-4 border-t border-slate-700">
-                              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                                <div className="text-sm text-slate-400">
-                                  Showing <span className="text-slate-200 font-medium">{startIndex + 1}</span> to{' '}
-                                  <span className="text-slate-200 font-medium">{Math.min(endIndex, monthUsers.length)}</span> of{' '}
-                                  <span className="text-slate-200 font-medium">{monthUsers.length}</span> results
+                            <div className="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                <div className="text-sm text-slate-500">
+                                  Showing <span className="text-slate-900 font-semibold">{startIndex + 1}</span> to{' '}
+                                  <span className="text-slate-900 font-semibold">{Math.min(endIndex, monthUsers.length)}</span> of{' '}
+                                  <span className="text-slate-900 font-semibold">{monthUsers.length} results</span>
                                 </div>
-
-                                <div className="flex items-center gap-2">
-                                  <label className="text-sm text-slate-400">Show:</label>
-                                  <select
-                                    value={pageSize}
-                                    onChange={(e) => {
-                                      setPageSize(Number(e.target.value))
-                                      setCurrentPage(1)
-                                    }}
-                                    className="input-field py-1 px-2 text-sm"
-                                  >
-                                    <option value={10}>10</option>
-                                    <option value={25}>25</option>
-                                    <option value={50}>50</option>
-                                    <option value={100}>100</option>
-                                  </select>
+                                <div className="flex items-center gap-4">
+                                  <div className="flex items-center gap-2">
+                                    <label className="text-sm text-slate-500">Show:</label>
+                                    <select
+                                      value={pageSize}
+                                      onChange={(e) => {
+                                        setPageSize(Number(e.target.value))
+                                        setCurrentPage(1)
+                                      }}
+                                      className="bg-white border border-slate-200 rounded-lg px-2 py-1 text-sm focus:ring-2 focus:ring-[#4f46e5] focus:outline-none"
+                                    >
+                                      <option value={10}>10</option>
+                                      <option value={25}>25</option>
+                                      <option value={50}>50</option>
+                                    </select>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                      disabled={currentPage === 1}
+                                      className="p-1 px-3 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-transparent transition-colors text-sm font-medium"
+                                    >
+                                      Previous
+                                    </button>
+                                    <button
+                                      onClick={() => setCurrentPage(prev => Math.min(Math.ceil(monthUsers.length / pageSize), prev + 1))}
+                                      disabled={currentPage === Math.ceil(monthUsers.length / pageSize)}
+                                      className="p-1 px-3 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-transparent transition-colors text-sm font-medium"
+                                    >
+                                      Next
+                                    </button>
+                                  </div>
                                 </div>
-
-                                <div className="flex items-center gap-2">
-                                  <button
-                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                                    disabled={currentPage === 1}
-                                    className="px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
-                                  >
-                                    Previous
-                                  </button>
-                                  <span className="text-sm text-slate-400">
-                                    Page <span className="text-slate-200 font-medium">{currentPage}</span> of{' '}
-                                    <span className="text-slate-200 font-medium">{Math.ceil(monthUsers.length / pageSize)}</span>
-                                  </span>
-                                  <button
-                                    onClick={() => setCurrentPage(prev => Math.min(Math.ceil(monthUsers.length / pageSize), prev + 1))}
-                                    disabled={currentPage === Math.ceil(monthUsers.length / pageSize)}
-                                    className="px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
-                                  >
-                                    Next
-                                  </button>
-                                </div>
-                              </div>
                             </div>
                           )}
                         </div>
@@ -508,7 +488,7 @@ export default function UserManagement() {
 
             {filteredUsers.length === 0 && (
               <div className="text-center py-12">
-                <p className="text-slate-400">No applications found</p>
+                <p className="text-slate-400 font-light italic">No applications found matches your criteria</p>
               </div>
             )}
           </div>
@@ -519,129 +499,154 @@ export default function UserManagement() {
       {selectedUser && (
         <div className="modal-overlay" onClick={() => setSelectedUser(null)}>
           <div
-            className="glass-card w-full max-w-5xl mx-4 md:mx-auto my-8 max-h-[90vh] overflow-y-auto"
+            className="bg-white w-full max-w-5xl mx-4 md:mx-auto my-8 max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl border border-[#4f46e5]/10"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Sticky Header */}
-            <div className="sticky top-0 bg-slate-900/95 backdrop-blur-sm flex items-center justify-between p-4 sm:p-6 border-b border-slate-700 z-10">
-              <h3 className="text-lg sm:text-xl font-semibold text-slate-50">Application Details</h3>
+            <div className="sticky top-0 bg-white/95 backdrop-blur-md flex items-center justify-between p-4 sm:p-6 border-b border-slate-100 z-10">
+              <div>
+                <h3 className="text-xl font-bold text-slate-900">Application Review</h3>
+                <p className="text-sm text-slate-500">{selectedUser.first_name}&apos;s profile</p>
+              </div>
               <button
                 onClick={() => setSelectedUser(null)}
-                className="text-slate-400 hover:text-slate-200 transition-colors"
+                className="p-2 text-slate-400 hover:text-[#4f46e5] hover:bg-slate-50 rounded-xl transition-all"
               >
-                <XCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+                <XCircle className="w-6 h-6" />
               </button>
             </div>
 
             {/* Scrollable Content */}
-            <div className="p-4 sm:p-6 space-y-8">
-              <section className="space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <div>
-                    <p className="text-sm text-slate-400">Candidate Status</p>
-                    <div className="mt-1">{getStatusBadge(selectedUser.status)}</div>
+            <div className="p-4 sm:p-8 space-y-10">
+              <section className="space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center">
+                      <Clock className="w-6 h-6 text-[#ef4444]" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-tight">Status</p>
+                      <div className="mt-0.5">{getStatusBadge(selectedUser.status)}</div>
+                    </div>
                   </div>
-                  <div className="text-sm text-slate-400">
-                    Applied on{' '}
-                    <span className="font-semibold text-slate-200">
-                      {new Date(selectedUser.created_at).toLocaleString()}
-                    </span>
+                  <div className="text-right">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-tight">Submission Date</p>
+                    <p className="text-sm font-semibold text-slate-700">
+                      {new Date(selectedUser.created_at).toLocaleString('en-IN')}
+                    </p>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {detailItems.map((item) => (
                     <div
                       key={item.label}
-                      className={`bg-slate-800/40 rounded-lg border border-slate-700/60 p-3 shadow-sm ${item.fullWidth ? 'sm:col-span-2 lg:col-span-3' : ''}`}
+                      className={`space-y-1.5 ${item.fullWidth ? 'sm:col-span-2 lg:col-span-3' : ''}`}
                     >
-                      <p className="text-xs uppercase tracking-wide text-slate-400 font-medium">
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">
                         {item.label}
                       </p>
-                      <p className={`mt-1 text-sm font-semibold text-slate-100 leading-snug ${item.valueClassName || ''}`}>
-                        {item.value}
-                      </p>
+                      <div className="bg-slate-50/50 border border-slate-100 rounded-2xl p-4 shadow-sm">
+                        <p className={`text-slate-900 font-semibold leading-relaxed ${item.valueClassName || ''}`}>
+                          {item.value}
+                        </p>
+                      </div>
                     </div>
                   ))}
                 </div>
               </section>
 
-              <section className="space-y-3">
-                <h4 className="text-lg font-semibold text-slate-200">Documents</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+              <section className="space-y-4">
+                <div className="flex items-center space-x-2 mb-2">
+                  <FileText className="w-5 h-5 text-[#4f46e5]" />
+                  <h4 className="text-lg font-bold text-slate-900">Verification Documents</h4>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {documentItems.map(({ label, url }) => (
                     <div
                       key={label}
-                      className="bg-slate-800/40 rounded-lg border border-slate-700/60 p-3 flex flex-col gap-3"
+                      className="group bg-white border border-slate-100 rounded-2xl p-4 shadow-sm hover:border-[#4f46e5]/30 transition-all"
                     >
-                      <p className="text-xs uppercase tracking-wide text-slate-400 font-medium">
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
                         {label}
                       </p>
                       {url ? (
-                        <>
-                          <div className="relative w-full aspect-[4/3] rounded-md overflow-hidden border border-slate-700">
+                        <div className="space-y-3">
+                          <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden border border-slate-100 shadow-inner group-hover:shadow-md transition-shadow">
                             <Image
                               src={url}
                               alt={label}
                               fill
                               sizes="(min-width: 1280px) 18vw, (min-width: 768px) 30vw, 80vw"
-                              className="object-cover transition-transform duration-300 hover:scale-[1.02]"
+                              className="object-cover transition-transform duration-500 group-hover:scale-110 cursor-zoom-in"
                               onClick={() => window.open(url, '_blank')}
-                              title="Click to view full size"
                             />
                           </div>
-                          <a
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center gap-2 rounded-md border border-[#93cfe2]/40 px-3 py-1.5 text-xs font-medium text-[#93cfe2] hover:bg-[#93cfe2]/10 transition-colors"
+                          <button
+                            onClick={() => window.open(url, '_blank')}
+                            className="w-full flex items-center justify-center space-x-2 text-xs font-bold text-[#4f46e5] bg-[#4f46e5]/5 py-2.5 rounded-xl hover:bg-[#4f46e5] hover:text-white transition-all"
                           >
-                            <Eye className="w-3 h-3" />
-                            Open
-                          </a>
-                        </>
+                            <Eye className="w-4 h-4" />
+                            <span>Preview Full Image</span>
+                          </button>
+                        </div>
                       ) : (
-                        <span className="text-xs text-slate-500 italic">Not uploaded</span>
+                        <div className="h-32 flex flex-col items-center justify-center text-slate-300 italic bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                           <AlertCircle className="w-6 h-6 mb-2 opacity-20" />
+                          <span className="text-xs">No file uploaded</span>
+                        </div>
                       )}
                     </div>
                   ))}
                 </div>
               </section>
 
-              <section className="space-y-3">
-                {selectedUser.status === 'pending' && (
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <button
-                      onClick={() => updateUserStatus(selectedUser.id, 'approved')}
-                      className="btn-primary flex-1 flex items-center justify-center space-x-2"
-                    >
-                      <CheckCircle className="w-4 h-4" />
-                      <span>Approve</span>
-                    </button>
-                    <button
-                      onClick={() => updateUserStatus(selectedUser.id, 'rejected')}
-                      className="btn-secondary flex-1 flex items-center justify-center space-x-2"
-                    >
-                      <XCircle className="w-4 h-4" />
-                      <span>Reject</span>
-                    </button>
-                  </div>
-                )}
+              <section className="pt-6 border-t border-slate-100">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  {selectedUser.status === 'pending' && (
+                    <>
+                      <button
+                        onClick={() => updateUserStatus(selectedUser.id, 'approved')}
+                        className="btn-primary flex-1 py-4 flex items-center justify-center space-x-3"
+                      >
+                        <CheckCircle className="w-5 h-5" />
+                        <span className="text-lg">Approve Application</span>
+                      </button>
+                      <button
+                        onClick={() => updateUserStatus(selectedUser.id, 'rejected')}
+                        className="flex-1 py-4 border-2 border-slate-100 text-slate-400 font-bold rounded-2xl hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all flex items-center justify-center space-x-3"
+                      >
+                        <XCircle className="w-5 h-5" />
+                        <span className="text-lg">Reject</span>
+                      </button>
+                    </>
+                  )}
 
-                {selectedUser.status === 'approved' && (
-                  <button
-                    onClick={() => generateOffer(selectedUser.id)}
-                    className="btn-primary w-full flex items-center justify-center space-x-2"
-                  >
-                    <FileDown className="w-4 h-4" />
-                    <span>Generate Offer Letter</span>
-                  </button>
-                )}
+                  {selectedUser.status === 'approved' && (
+                    <button
+                      onClick={() => generateOffer(selectedUser.id)}
+                      className="btn-primary w-full py-4 flex items-center justify-center space-x-3 shadow-xl shadow-[#4f46e5]/20 animate-pulse"
+                    >
+                      <FileDown className="w-6 h-6" />
+                      <span className="text-lg">Generate & Download Offer Letter</span>
+                    </button>
+                  )}
+
+                  {selectedUser.status === 'offer_generated' && (
+                    <button
+                      onClick={() => generateOffer(selectedUser.id)}
+                      className="w-full py-4 bg-slate-100 text-slate-500 font-bold rounded-2xl flex items-center justify-center space-x-3 hover:bg-slate-200 transition-all"
+                    >
+                      <RefreshCw className="w-5 h-5" />
+                      <span className="text-lg">Regenerate Offer Letter</span>
+                    </button>
+                  )}
+                </div>
               </section>
             </div>
           </div>
         </div>
       )}
-
     </div>
   )
 }

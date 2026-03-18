@@ -102,22 +102,40 @@ export default async function handler(
 
         let browser: any
         if (isLocal) {
-            // Local development: Use local Chrome/Chromium
-            // You might need to adjust the executablePath for your local machine if not found automatically
-            const localExecutablePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe' // Windows default
+            // Robust local Chrome path detection for Windows
+            const possiblePaths = [
+                'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+                'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+                process.env.CHROME_PATH // Allow override via env var
+            ].filter(Boolean) as string[]
+            
+            let executablePath: string | undefined
+            for (const p of possiblePaths) {
+                if (fs.existsSync(p)) {
+                    executablePath = p
+                    break
+                }
+            }
 
+            if (!executablePath) {
+                console.warn('Could not automatically find Chrome. PDF generation may fail.')
+            }
+
+            console.log(`Launching browser with executablePath: ${executablePath || 'default'}`)
             browser = await puppeteer.launch({
-                args: (chromium as any).args,
+                args: isLocal ? ['--no-sandbox', '--disable-setuid-sandbox'] : (chromium as any).args,
                 defaultViewport: (chromium as any).defaultViewport,
-                executablePath: localExecutablePath,
+                executablePath,
                 headless: true,
             } as any)
         } else {
             // Production (Vercel)
+            const prodPath = await chromium.executablePath()
+            console.log(`Launching prod browser with path: ${prodPath}`)
             browser = await puppeteer.launch({
                 args: (chromium as any).args,
                 defaultViewport: (chromium as any).defaultViewport,
-                executablePath: await chromium.executablePath(),
+                executablePath: prodPath,
                 headless: (chromium as any).headless,
             } as any)
         }
@@ -178,7 +196,11 @@ export default async function handler(
         }
 
     } catch (error: any) {
-        console.error('Error generating PDF:', error)
-        res.status(500).json({ error: 'Failed to generate PDF', details: error.message })
+        console.error('CRITICAL Error generating PDF:', error)
+        res.status(500).json({ 
+            error: 'Failed to generate PDF', 
+            details: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined 
+        })
     }
 }

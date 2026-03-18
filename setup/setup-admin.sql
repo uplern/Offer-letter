@@ -1,9 +1,10 @@
--- Setup admin user for Zyntiq admin panel
+-- Setup admin user for Uplern admin panel
 -- Run this in Supabase SQL Editor
 
 -- 1. Create admins table if it doesn't exist
 CREATE TABLE IF NOT EXISTS admins (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text,
   email text UNIQUE NOT NULL,
   password_hash text NOT NULL,
   created_at timestamptz DEFAULT now()

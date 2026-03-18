@@ -79,15 +79,15 @@ export default async function handler(
 
         if (!fileData || !fileName || !contentType || !folder || !userId) {
             return res.status(400).json({
-                error: 'Missing required fields',
-                details: {
-                    fileData: !!fileData,
-                    fileName: !!fileName,
-                    contentType: !!contentType,
-                    folder: !!folder,
-                    userId: !!userId
-                }
+                error: 'Missing required fields'
             })
+        }
+
+        // Basic authorization check: Ensure a custom header matches the userId
+        // In a real app, this would be a verified JWT session check.
+        const authHeader = req.headers['x-user-id']
+        if (authHeader !== userId) {
+            return res.status(401).json({ error: 'Unauthorized: User mapping mismatch' })
         }
 
         // Convert base64 to buffer
@@ -108,10 +108,9 @@ export default async function handler(
             finalContentType = compressed.contentType
         }
 
-        // Generate unique filename with correct extension
-        const timestamp = Date.now()
+        // Use a stable filename (no timestamp) so retries overwrite the same file
         const ext = finalContentType === 'image/webp' ? 'webp' : (fileName.split('.').pop() || 'bin')
-        const uniqueFileName = `${folder}/${userId}_${timestamp}.${ext}`
+        const uniqueFileName = `${folder}/${userId}.${ext}`
 
         console.log('Uploading to Supabase:', {
             path: uniqueFileName,
@@ -119,13 +118,13 @@ export default async function handler(
             contentType: finalContentType
         })
 
-        // Upload to Supabase
+        // Upload to Supabase with upsert:true — overwrites existing file if user retries
         const { data, error } = await supabaseAdmin.storage
             .from('applications')
             .upload(uniqueFileName, buffer, {
                 contentType: finalContentType,
                 cacheControl: '3600',
-                upsert: false
+                upsert: true
             })
 
         if (error) {

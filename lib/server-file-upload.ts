@@ -37,11 +37,11 @@ async function fetchWithTimeout(
 export class ServerFileUpload {
     // Aggressive compression settings for maximum free tier capacity
     private static COMPRESSION_OPTIONS = {
-        maxSizeMB: 0.5, // Target 500KB max per image
-        maxWidthOrHeight: 1600, // Reduce from 1920 to save more space
+        maxSizeMB: 0.2, // Target 200KB max per image (Aggressive for free tier)
+        maxWidthOrHeight: 1600,
         useWebWorker: true,
-        fileType: 'image/webp', // WebP gives best compression
-        initialQuality: 0.7, // 70% quality - good balance
+        fileType: 'image/webp',
+        initialQuality: 0.6, // Slightly reduced quality for better compression
     }
 
     static async uploadFile(
@@ -76,6 +76,7 @@ export class ServerFileUpload {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-user-id': userId
                 },
                 body: JSON.stringify({
                     fileData: base64,

@@ -58,7 +58,7 @@ export interface Template {
   updated_at: string
 }
 
-export interface User {
+export interface Candidate {
   id: string
   first_name: string
   last_name: string
@@ -91,6 +91,6 @@ export interface OfferLetter {
   generated_by_admin_id?: string
   created_at: string
   // Relations
-  user?: User
+  user?: Candidate
   template?: Template
 }

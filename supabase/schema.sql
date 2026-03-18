@@ -1,12 +1,9 @@
--- Supabase Database Schema for Zyntiq Careers System
--- Converted from MySQL to PostgreSQL
+-- Enable Extensions (If needed, though gen_random_uuid is built-in in newer PG)
+-- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
--- Admins table
-CREATE TABLE admins (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+-- Admins table for Uplern Dashboard
+CREATE TABLE IF NOT EXISTS admins (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
