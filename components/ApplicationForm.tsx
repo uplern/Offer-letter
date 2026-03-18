@@ -527,14 +527,14 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
             <button
               type="submit"
               disabled={loading || success}
-              className={`${loading ? 'btn-loading-shimmer' : 'btn-primary disabled:opacity-50'} w-full sm:w-auto sm:px-8 text-base py-3 flex items-center justify-center space-x-2 disabled:cursor-not-allowed`}
+              className={`${loading ? 'btn-loading-shimmer' : 'btn-primary disabled:opacity-50'} w-full sm:w-auto sm:px-8 text-base py-3 flex items-center justify-center rounded-full space-x-2 disabled:cursor-not-allowed`}
               aria-live="polite"
               aria-busy={loading}
             >
               {loading ? (
                 <>
                   <div className="loading-spinner" aria-hidden="true"></div>
-                  <span className="font-medium tracking-wide">Generating offer...</span>
+                  <span className="font-medium tracking-wide">Fetching Info...</span>
                 </>
               ) : success ? (
                 <>
