@@ -75,7 +75,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="px-4 min-h-screen flex items-center pt-8 sm:pt-10 lg:pt-0 -mt-20 sm:-mt-24 lg:-mt-28">
+      <section className="px-4 min-h-screen flex items-center pt-20 sm:pt-24 lg:pt-0 lg:-mt-28">
         <div className="max-w-7xl mx-auto w-full">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center overflow-hidden min-w-0">
             {/* Left Side - Content */}
