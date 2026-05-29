@@ -1,6 +1,8 @@
 import { saveAs } from 'file-saver'
 import { getTemplateCode } from './role-tenure-mapping'
 
+const MAX_GENERATION_RETRIES = 3
+
 async function readErrorMessage(response: Response): Promise<string> {
   try {
     const contentType = response.headers.get('content-type') || ''
@@ -50,6 +52,9 @@ export interface OfferLetterData {
 export async function generateOfferLetter(data: OfferLetterData): Promise<void> {
   try {
     const templateCode = getTemplateCode(data.roleCode, data.tenureMonths)
+    if (!templateCode) {
+      throw new Error('No offer template configured for selected role and tenure')
+    }
 
     const currentDate = data.generatedDate || new Date().toLocaleDateString('en-IN', {
       day: '2-digit',
@@ -57,28 +62,40 @@ export async function generateOfferLetter(data: OfferLetterData): Promise<void> 
       year: 'numeric'
     })
 
-    // Call API endpoint to generate offer letter (HTML based)
-    const response = await fetchWithTimeout('/api/generate-offer-html', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        candidateName: data.candidateName,
-        date: currentDate,
-        roleName: data.roleName,
-        tenureLabel: data.tenureLabel,
-        templateCode: templateCode,
-        userId: data.userId
-      })
-    }, 60_000)
+    let response: Response | null = null
+    let lastError = ''
+    for (let attempt = 1; attempt <= MAX_GENERATION_RETRIES; attempt++) {
+      try {
+        response = await fetchWithTimeout('/api/generate-offer-html', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            candidateName: data.candidateName,
+            date: currentDate,
+            roleName: data.roleName,
+            tenureLabel: data.tenureLabel,
+            templateCode: templateCode,
+            userId: data.userId
+          })
+        }, 60_000)
 
-    if (!response.ok) {
-      const message = await readErrorMessage(response)
-      throw new Error(message || 'Failed to generate offer letter')
+        if (response.ok) break
+        lastError = await readErrorMessage(response)
+      } catch (error: any) {
+        lastError = error?.message || 'Network error while generating offer letter'
+      }
+
+      if (attempt < MAX_GENERATION_RETRIES) {
+        await new Promise((resolve) => setTimeout(resolve, attempt * 1500))
+      }
     }
 
-    // Get the blob from response
+    if (!response || !response.ok) {
+      throw new Error(lastError || 'Failed to generate offer letter')
+    }
+
     const blob = await response.blob()
 
     // Verify blob is not empty
@@ -108,6 +125,6 @@ export async function generateOfferLetter(data: OfferLetterData): Promise<void> 
 
 // Template validation
 export function validateTemplate(templateCode: string): boolean {
-  const validTemplates = ['SM_2M', 'SM_4M', 'TA_1M', 'TA_2M', 'TA_4M', 'TASM_2M', 'TASM_4M']
+  const validTemplates = ['HR_2M', 'BD_2M']
   return validTemplates.includes(templateCode)
 }

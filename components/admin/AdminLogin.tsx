@@ -54,8 +54,8 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
         <div className="text-center mb-8">
           <div className="relative w-16 h-16 mx-auto mb-4">
             <Image
-              src="/premiumlogo.png"
-              alt="OfferGen Logo"
+              src="/logo.png"
+              alt="Uplern Logo"
               fill
               className="object-contain"
               style={{ filter: 'drop-shadow(0 4px 20px rgba(139, 92, 246, 0.2))' }}
@@ -63,7 +63,7 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
             />
           </div>
           <h2 className="text-2xl font-bold text-slate-50 mb-2">Admin Login</h2>
-          <p className="text-slate-400">OfferGen Admin Panel</p>
+          <p className="text-slate-400">Uplern Admin Panel</p>
         </div>
 
         {/* Error Message */}
@@ -104,7 +104,7 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-purple-400 transition-colors"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-teal-500 transition-colors"
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>

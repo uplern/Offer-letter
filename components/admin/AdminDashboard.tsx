@@ -88,10 +88,10 @@ export default function AdminDashboard({ admin, onLogout }: AdminDashboardProps)
           <div className="space-y-8">
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-white border border-[#4f46e5]/10 rounded-2xl p-6 shadow-[0_4px_20px_rgb(79,70,229,0.03)] text-center">
+              <div className="bg-white border border-teal-900/10 rounded-xl p-6 shadow-sm text-center">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-[#ef4444]/10 rounded-xl flex items-center justify-center">
-                    <Users className="w-6 h-6 text-[#ef4444]" />
+                  <div className="w-12 h-12 bg-[#f59e0b]/10 rounded-xl flex items-center justify-center">
+                    <Users className="w-6 h-6 text-[#f59e0b]" />
                   </div>
                   <div className="text-right">
                     <p className="text-slate-500 text-sm font-medium">Applications</p>
@@ -104,10 +104,10 @@ export default function AdminDashboard({ admin, onLogout }: AdminDashboardProps)
                 </div>
               </div>
 
-              <div className="bg-white border border-[#4f46e5]/10 rounded-2xl p-6 shadow-[0_4px_20px_rgb(79,70,229,0.03)] text-center">
+              <div className="bg-white border border-teal-900/10 rounded-xl p-6 shadow-sm text-center">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-[#4f46e5]/10 rounded-xl flex items-center justify-center">
-                    <FileText className="w-6 h-6 text-[#4f46e5]" />
+                  <div className="w-12 h-12 bg-[#0f766e]/10 rounded-xl flex items-center justify-center">
+                    <FileText className="w-6 h-6 text-[#0f766e]" />
                   </div>
                   <div className="text-right">
                     <p className="text-slate-500 text-sm font-medium">Templates</p>
@@ -115,15 +115,15 @@ export default function AdminDashboard({ admin, onLogout }: AdminDashboardProps)
                   </div>
                 </div>
                 <div className="flex items-center text-slate-400 text-xs">
-                  <FileCheck className="w-3 h-3 mr-1 text-[#4f46e5]" />
+                  <FileCheck className="w-3 h-3 mr-1 text-[#0f766e]" />
                   <span>Offer letter layouts</span>
                 </div>
               </div>
 
-              <div className="bg-white border border-[#4f46e5]/10 rounded-2xl p-6 shadow-[0_4px_20px_rgb(79,70,229,0.03)] text-center">
+              <div className="bg-white border border-teal-900/10 rounded-xl p-6 shadow-sm text-center">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center">
-                    <Briefcase className="w-6 h-6 text-indigo-600" />
+                  <div className="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center">
+                    <Briefcase className="w-6 h-6 text-teal-700" />
                   </div>
                   <div className="text-right">
                     <p className="text-slate-500 text-sm font-medium">Generated</p>
@@ -131,12 +131,12 @@ export default function AdminDashboard({ admin, onLogout }: AdminDashboardProps)
                   </div>
                 </div>
                 <div className="flex items-center text-slate-400 text-xs">
-                  <UserCheck className="w-3 h-3 mr-1 text-indigo-500" />
+                  <UserCheck className="w-3 h-3 mr-1 text-teal-600" />
                   <span>Sent offer letters</span>
                 </div>
               </div>
 
-              <div className="bg-white border border-[#4f46e5]/10 rounded-2xl p-6 shadow-[0_4px_20px_rgb(79,70,229,0.03)] text-center">
+              <div className="bg-white border border-teal-900/10 rounded-xl p-6 shadow-sm text-center">
                 <div className="flex items-center justify-between mb-4">
                   <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center">
                     <Clock className="w-6 h-6 text-amber-600" />
@@ -154,15 +154,15 @@ export default function AdminDashboard({ admin, onLogout }: AdminDashboardProps)
             </div>
 
             {/* Quick Actions */}
-            <div className="bg-white border border-[#4f46e5]/10 rounded-2xl p-6 shadow-[0_4px_20px_rgb(79,70,229,0.03)]">
+            <div className="bg-white border border-teal-900/10 rounded-xl p-6 shadow-sm">
               <h3 className="text-xl font-bold text-slate-900 mb-6">Quick Actions</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <button
                   onClick={() => setActiveTab('users')}
-                  className="group bg-slate-50/50 border border-slate-100 p-6 rounded-2xl text-left hover:border-[#4f46e5]/30 hover:bg-white hover:shadow-lg transition-all duration-300"
+                  className="group bg-[#f8faf7] border border-teal-900/10 p-6 rounded-xl text-left hover:border-[#0f766e]/30 hover:bg-white hover:shadow-lg transition-all duration-300"
                 >
-                  <div className="w-10 h-10 bg-[#ef4444]/10 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <Users className="w-5 h-5 text-[#ef4444]" />
+                  <div className="w-10 h-10 bg-[#f59e0b]/10 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <Users className="w-5 h-5 text-[#f59e0b]" />
                   </div>
                   <h4 className="font-bold text-slate-900 mb-1">Applications</h4>
                   <p className="text-sm text-slate-500">Review and process candidate applications</p>
@@ -170,10 +170,10 @@ export default function AdminDashboard({ admin, onLogout }: AdminDashboardProps)
 
                 <button
                   onClick={() => setActiveTab('templates')}
-                  className="group bg-slate-50/50 border border-slate-100 p-6 rounded-2xl text-left hover:border-[#4f46e5]/30 hover:bg-white hover:shadow-lg transition-all duration-300"
+                  className="group bg-[#f8faf7] border border-teal-900/10 p-6 rounded-xl text-left hover:border-[#0f766e]/30 hover:bg-white hover:shadow-lg transition-all duration-300"
                 >
-                  <div className="w-10 h-10 bg-[#4f46e5]/10 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <FileText className="w-5 h-5 text-[#4f46e5]" />
+                  <div className="w-10 h-10 bg-[#0f766e]/10 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <FileText className="w-5 h-5 text-[#0f766e]" />
                   </div>
                   <h4 className="font-bold text-slate-900 mb-1">Offer Templates</h4>
                   <p className="text-sm text-slate-500">Manage letter layouts and content</p>
@@ -181,10 +181,10 @@ export default function AdminDashboard({ admin, onLogout }: AdminDashboardProps)
 
                 <button
                   onClick={() => setActiveTab('roles')}
-                  className="group bg-slate-50/50 border border-slate-100 p-6 rounded-2xl text-left hover:border-[#4f46e5]/30 hover:bg-white hover:shadow-lg transition-all duration-300"
+                  className="group bg-[#f8faf7] border border-teal-900/10 p-6 rounded-xl text-left hover:border-[#0f766e]/30 hover:bg-white hover:shadow-lg transition-all duration-300"
                 >
-                  <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <Settings className="w-5 h-5 text-indigo-600" />
+                  <div className="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <Settings className="w-5 h-5 text-teal-700" />
                   </div>
                   <h4 className="font-bold text-slate-900 mb-1">Company Setup</h4>
                   <p className="text-sm text-slate-500">Configure roles, tenures, and settings</p>
@@ -199,7 +199,7 @@ export default function AdminDashboard({ admin, onLogout }: AdminDashboardProps)
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="bg-white border-b border-slate-100 px-6 py-4">
+      <div className="bg-white border-b border-teal-900/10 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="relative w-12 h-12">
@@ -227,7 +227,7 @@ export default function AdminDashboard({ admin, onLogout }: AdminDashboardProps)
       </div>
 
       {/* Navigation */}
-      <div className="bg-slate-50/50 border-b border-slate-100 px-6">
+      <div className="bg-[#f8faf7] border-b border-teal-900/10 px-6">
         <div className="max-w-7xl mx-auto">
           <nav className="flex space-x-1">
             {[
@@ -240,7 +240,7 @@ export default function AdminDashboard({ admin, onLogout }: AdminDashboardProps)
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center space-x-2 px-6 py-4 text-sm font-semibold border-b-2 transition-all ${activeTab === tab.id
-                    ? 'border-[#4f46e5] text-[#4f46e5] bg-white'
+                    ? 'border-[#0f766e] text-[#0f766e] bg-white'
                     : 'border-transparent text-slate-400 hover:text-slate-600 hover:bg-slate-100/50'
                   }`}
               >

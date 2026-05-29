@@ -1,4 +1,4 @@
-# 🚀 Zyntiq Setup Guide
+# 🚀 Uplern Setup Guide
 
 ## **Prerequisites**
 - Node.js 18+ installed
@@ -11,7 +11,7 @@
 1. Go to [supabase.com](https://supabase.com) and sign up/login
 2. Click "New Project"
 3. Choose your organization
-4. Enter project name: `zyntiq-careers`
+4. Enter project name: `uplern-careers`
 5. Enter a strong database password
 6. Select a region close to you
 7. Click "Create new project"
@@ -99,7 +99,7 @@ npm run setup-db
 
 You should see:
 ```
-🚀 Setting up Zyntiq database...
+🚀 Setting up Uplern database...
 ✅ Database connection successful
 ✅ Storage bucket created/exists
 ✅ Database data looks good
@@ -197,4 +197,4 @@ If you encounter issues:
 4. Ensure you followed each step exactly
 5. Try the database test in admin panel
 
-**Your Zyntiq career platform is now ready! 🎉**
+**Your Uplern career platform is now ready! 🎉**

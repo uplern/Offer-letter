@@ -80,15 +80,12 @@ INSERT INTO admins (name, email, password_hash) VALUES
 
 -- Default roles with available tenures
 INSERT INTO roles (name, code, description) VALUES 
-('Sales & Marketing', 'SM', 'Sales and marketing operations - Available tenures: 2M, 4M'),
-('Talent Acquisition', 'TA', 'Recruitment and talent sourcing - Available tenures: 1M, 2M, 4M'),
-('Talent Acquisition Sales & Marketing Combined', 'TASM', 'Combined TA and SM role - Available tenures: 2M, 4M');
+('Human Resources', 'HR', 'Human Resources operations - Available tenures: 2M'),
+('Business Development', 'BD', 'Business Development operations - Available tenures: 2M');
 
 -- Default tenures
 INSERT INTO tenures (label, months) VALUES 
-('1 Month', 1),
-('2 Months', 2),
-('4 Months', 4);
+('2 Months', 2);
 
 -- Create indexes for better performance
 CREATE INDEX idx_users_email ON users(email);

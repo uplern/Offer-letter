@@ -49,8 +49,8 @@ export default async function handler(
         // We can enforce using the DB name to ensure the offer letter matches the application
         const finalCandidateName = dbName
 
-        // Default to SM_2M if no template code provided (fallback)
-        const templateName = templateCode || 'SM_2M'
+        // Default to HR_2M if no template code provided (fallback)
+        const templateName = templateCode || 'HR_2M'
         const templatePath = path.join(process.cwd(), 'public', 'templates', 'html', `${templateName}.html`)
 
         if (!fs.existsSync(templatePath)) {

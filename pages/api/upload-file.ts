@@ -17,6 +17,9 @@ const COMPRESSION_CONFIG = {
     quality: 70, // Reduced from 80 to save more space
     format: 'webp' as const, // WebP gives best compression (30-50% smaller than JPEG)
 }
+const ALLOWED_FOLDERS = new Set(['aadhar_front', 'aadhar_back', 'photos', 'college_ids', 'marksheets'])
+const ALLOWED_CONTENT_TYPES = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf', 'image/heic', 'image/heif'])
+const MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024
 
 async function compressImage(buffer: Buffer, contentType: string): Promise<{ buffer: Buffer; contentType: string }> {
     // Only compress images
@@ -82,6 +85,12 @@ export default async function handler(
                 error: 'Missing required fields'
             })
         }
+        if (!ALLOWED_FOLDERS.has(folder)) {
+            return res.status(400).json({ error: 'Invalid upload folder' })
+        }
+        if (!ALLOWED_CONTENT_TYPES.has(contentType)) {
+            return res.status(400).json({ error: 'Invalid file type' })
+        }
 
         // Basic authorization check: Ensure a custom header matches the userId
         // In a real app, this would be a verified JWT session check.
@@ -93,6 +102,9 @@ export default async function handler(
         // Convert base64 to buffer
         const base64Data = fileData.split(',')[1] || fileData
         let buffer = Buffer.from(base64Data, 'base64')
+        if (buffer.length === 0 || buffer.length > MAX_FILE_SIZE_BYTES) {
+            return res.status(400).json({ error: 'Invalid file size' })
+        }
         let finalContentType = contentType
 
         console.log('Upload request:', {

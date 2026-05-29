@@ -172,7 +172,7 @@ export default function TemplateManagement() {
                   <tr key={template.id}>
                     <td>
                       <div className="flex items-center space-x-3">
-                        <FileText className="w-5 h-5 text-purple-400" />
+                        <FileText className="w-5 h-5 text-teal-500" />
                         <span className="text-slate-200">{template.title}</span>
                       </div>
                     </td>
@@ -255,7 +255,7 @@ export default function TemplateManagement() {
                   accept=".docx"
                   onChange={handleUpload}
                   disabled={uploading}
-                  className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-purple-600 file:text-white hover:file:bg-purple-700 transition-colors disabled:opacity-50"
+                  className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-teal-600 file:text-white hover:file:bg-teal-700 transition-colors disabled:opacity-50"
                 />
                 <p className="text-xs text-slate-400 mt-1">
                   Upload DOCX files with {`{{Name}}`} and {`{{Date}}`} placeholders

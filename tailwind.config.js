@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Professional Purple Theme
+        // Uplern Teal Theme
         primary: {
           50: '#f8fafc',
           100: '#f1f5f9',
@@ -21,17 +21,17 @@ module.exports = {
           800: '#1e293b',
           900: '#0f172a',
         },
-        purple: {
-          50: '#faf5ff',
-          100: '#f3e8ff',
-          200: '#e9d5ff',
-          300: '#d8b4fe',
-          400: '#c084fc',
-          500: '#a855f7',
-          600: '#9333ea',
-          700: '#7c3aed',
-          800: '#6b21a8',
-          900: '#581c87',
+        brand: {
+          50: '#f0fdfa',
+          100: '#ccfbf1',
+          200: '#99f6e4',
+          300: '#5eead4',
+          400: '#2dd4bf',
+          500: '#14b8a6',
+          600: '#0d9488',
+          700: '#0f766e',
+          800: '#115e59',
+          900: '#134e4a',
         },
         dark: {
           50: '#f8fafc',
@@ -48,8 +48,8 @@ module.exports = {
         }
       },
       backgroundImage: {
-        'gradient-purple': 'linear-gradient(135deg, #ffffff 0%, #f8fafc 25%, #f1f5f9 50%, #e2e8f0 75%, #f3e8ff 100%)',
-        'gradient-button': 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)',
+        'gradient-uplern': 'linear-gradient(135deg, #ffffff 0%, #f0fdfa 35%, #fff7ed 100%)',
+        'gradient-button': 'linear-gradient(135deg, #0f766e 0%, #f59e0b 100%)',
       },
       animation: {
         'gradient-shift': 'gradientShift 20s ease infinite',

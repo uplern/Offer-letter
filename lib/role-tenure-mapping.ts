@@ -10,29 +10,18 @@ export interface RoleTenureMapping {
 }
 
 export const ROLE_TENURE_MAPPING: RoleTenureMapping = {
-  'SM': {
-    name: 'Sales & Marketing',
-    availableTenures: [2, 4], // 2M, 4M
+  'HR': {
+    name: 'Human Resources',
+    availableTenures: [2], // 2M
     templates: {
-      2: 'SM_2M',
-      4: 'SM_4M'
+      2: 'HR_2M'
     }
   },
-  'TA': {
-    name: 'Talent Acquisition',
-    availableTenures: [1, 2, 4], // 1M, 2M, 4M
+  'BD': {
+    name: 'Business Development',
+    availableTenures: [2], // 2M
     templates: {
-      1: 'TA_1M',
-      2: 'TA_2M',
-      4: 'TA_4M'
-    }
-  },
-  'TASM': {
-    name: 'Talent Acquisition Sales & Marketing Combined',
-    availableTenures: [2, 4], // 2M, 4M
-    templates: {
-      2: 'TASM_2M',
-      4: 'TASM_4M'
+      2: 'BD_2M'
     }
   }
 }

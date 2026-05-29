@@ -1,4 +1,4 @@
-# 🎉 Zyntiq Final Setup - All Issues Fixed!
+# 🎉 Uplern Final Setup - All Issues Fixed!
 
 ## ✅ Issues Fixed
 
@@ -93,7 +93,7 @@ npm run dev
 
 ## 🔧 Database Schema
 Your database now contains:
-- **3 Roles**: Sales & Marketing, Talent Acquisition, Combined
+- **3 Roles**: Sales & Marketing, HR & Business Development, Combined HR & BD + Sales & Marketing
 - **3 Tenures**: 1 Month, 2 Months, 4 Months  
 - **7 Templates**: All role/tenure combinations
 - **1 Admin**: System administrator account
@@ -155,4 +155,4 @@ npm start
 - ✅ Error handling implemented
 - ✅ Code quality improved
 
-**Your Zyntiq career platform is now fully functional and ready for production use!**
+**Your Uplern career platform is now fully functional and ready for production use!**

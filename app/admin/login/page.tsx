@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { loginAction } from '@/app/actions/auth'
 
 export default function AdminLoginPage() {
   const router = useRouter()
@@ -15,17 +14,19 @@ export default function AdminLoginPage() {
     setLoading(true)
     setError('')
 
-    const formData = new FormData(e.currentTarget)
-
     try {
-      const result = await loginAction(null, formData)
+      const email = (e.currentTarget.elements.namedItem('email') as HTMLInputElement)?.value || ''
+      const password = (e.currentTarget.elements.namedItem('password') as HTMLInputElement)?.value || ''
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      })
+      const result = await response.json()
 
-      if (result.error) {
+      if (!response.ok || result.error) {
         setError(result.error)
-      } else if (result.success && result.admin) {
-        // Maintain existing client-side session logic for compatibility
-        localStorage.setItem('adminToken', result.admin.id)
-        localStorage.setItem('adminEmail', result.admin.email)
+      } else if (result.success) {
         router.push('/admin')
       }
     } catch (err: any) {
@@ -36,8 +37,8 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <nav className="w-full py-4 lg:py-6 px-4 sm:px-6 md:px-8 lg:px-16">
+    <div className="min-h-screen bg-[#f8faf7]">
+      <nav className="w-full border-b border-teal-900/10 bg-[#f8faf7]/90 py-4 lg:py-5 px-4 sm:px-6 md:px-8 lg:px-16 backdrop-blur">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="relative w-36 lg:w-40 h-10 lg:h-12">
             <Image
@@ -51,7 +52,7 @@ export default function AdminLoginPage() {
           </div>
           <button 
             onClick={() => router.push('/')}
-            className="text-slate-500 hover:text-[#4f46e5] transition-colors text-sm font-medium"
+            className="rounded-lg border border-teal-900/10 bg-white px-3 py-2 text-sm font-medium text-slate-500 shadow-sm transition-colors hover:text-[#0f766e]"
           >
             Back to Site
           </button>
@@ -59,10 +60,11 @@ export default function AdminLoginPage() {
       </nav>
 
       <div className="flex items-center justify-center px-4 py-12 md:py-20">
-        <div className="max-w-md w-full bg-white border border-[#4f46e5]/10 rounded-3xl p-8 shadow-[0_8px_30px_rgb(79,70,229,0.04)]">
+        <div className="max-w-md w-full bg-white border border-teal-900/10 rounded-xl p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
           <div className="text-center mb-8">
+            <div className="mx-auto mb-3 w-fit rounded-md bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">Uplern HQ</div>
             <h1 className="text-3xl font-bold text-slate-900 mb-2">
-              Admin <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ef4444] to-[#4f46e5]">Portal</span>
+              Admin <span className="text-[#0f766e]">Portal</span>
             </h1>
             <p className="text-slate-500 font-light">Secure access for Uplern management</p>
           </div>
@@ -97,7 +99,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full flex items-center justify-center space-x-2 shadow-xl shadow-[#4f46e5]/10"
+              className="btn-primary w-full flex items-center justify-center space-x-2 shadow-xl shadow-[#0f766e]/10"
             >
               <span>{loading ? 'Authenticating...' : 'Sign In to Dashboard'}</span>
             </button>

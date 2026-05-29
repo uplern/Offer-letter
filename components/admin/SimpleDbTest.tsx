@@ -80,7 +80,7 @@ export default function SimpleDbTest() {
       <button
         onClick={testConnection}
         disabled={loading}
-        className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50"
+        className="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700 disabled:opacity-50"
       >
         {loading ? 'Testing...' : 'Test DB Connection'}
       </button>

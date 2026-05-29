@@ -185,7 +185,7 @@ export default function UserManagement() {
         )
       case 'offer_generated':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#4f46e5]/10 text-[#4f46e5] border border-[#4f46e5]/20">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#0f766e]/10 text-[#0f766e] border border-[#0f766e]/20">
             <FileDown className="w-3 h-3 mr-1" />
             Offer Ready
           </span>
@@ -276,7 +276,7 @@ export default function UserManagement() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white border border-[#4f46e5]/10 rounded-2xl p-4 shadow-sm">
+      <div className="bg-white border border-teal-900/10 rounded-xl p-4 shadow-sm">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
@@ -310,7 +310,7 @@ export default function UserManagement() {
       </div>
 
       {/* Users Grouped by Month/Year */}
-      <div className="bg-white border border-[#4f46e5]/10 rounded-2xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-teal-900/10 rounded-xl overflow-hidden shadow-sm">
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <div className="loading-spinner"></div>
@@ -328,21 +328,21 @@ export default function UserManagement() {
                   const displayUsers = isExpanded ? monthUsers.slice(startIndex, endIndex) : []
 
                   return (
-                    <div key={month} className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
+                    <div key={month} className="bg-white border border-teal-900/10 rounded-xl overflow-hidden shadow-sm">
                       <button
                         onClick={() => toggleGroup(year, month)}
-                        className="w-full flex items-center justify-between p-4 bg-slate-50/50 hover:bg-slate-100 transition-colors"
+                        className="w-full flex items-center justify-between p-4 bg-[#f8faf7] hover:bg-slate-100 transition-colors"
                       >
                         <div className="flex items-center space-x-3">
                           {isExpanded ? (
-                            <ChevronDown className="w-5 h-5 text-[#4f46e5]" />
+                            <ChevronDown className="w-5 h-5 text-[#0f766e]" />
                           ) : (
                             <ChevronRight className="w-5 h-5 text-slate-400" />
                           )}
                           <h4 className="text-lg font-bold text-slate-800">
                             {month}
                             {isCurrentMonth && (
-                               <span className="ml-2 text-xs bg-[#4f46e5]/10 text-[#4f46e5] px-2 py-1 rounded-full border border-[#4f46e5]/20 font-medium">
+                               <span className="ml-2 text-xs bg-[#0f766e]/10 text-[#0f766e] px-2 py-1 rounded-full border border-[#0f766e]/20 font-medium">
                                 Current
                               </span>
                             )}
@@ -368,7 +368,7 @@ export default function UserManagement() {
                             </thead>
                             <tbody>
                               {displayUsers.map((user) => (
-                                <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
+                                <tr key={user.id} className="hover:bg-[#f8faf7] transition-colors">
                                   <td>
                                     <div>
                                       <div className="font-semibold text-slate-900">
@@ -397,7 +397,7 @@ export default function UserManagement() {
                                     <div className="flex items-center space-x-1">
                                       <button
                                         onClick={() => setSelectedUser(user)}
-                                        className="p-2 text-slate-400 hover:text-[#4f46e5] transition-colors rounded-lg hover:bg-[#4f46e5]/5"
+                                        className="p-2 text-slate-400 hover:text-[#0f766e] transition-colors rounded-lg hover:bg-[#0f766e]/5"
                                         title="View Details"
                                       >
                                         <Eye className="w-5 h-5" />
@@ -423,7 +423,7 @@ export default function UserManagement() {
                                       {user.status === 'approved' && (
                                         <button
                                           onClick={() => generateOffer(user.id)}
-                                          className="p-2 text-slate-400 hover:text-[#4f46e5] transition-colors rounded-lg hover:bg-[#4f46e5]/5 hidden sm:inline-block"
+                                          className="p-2 text-slate-400 hover:text-[#0f766e] transition-colors rounded-lg hover:bg-[#0f766e]/5 hidden sm:inline-block"
                                           title="Generate Offer"
                                         >
                                           <FileDown className="w-5 h-5" />
@@ -437,7 +437,7 @@ export default function UserManagement() {
                           </table>
 
                           {monthUsers.length > pageSize && (
-                            <div className="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div className="p-4 border-t border-teal-900/10 flex flex-col sm:flex-row items-center justify-between gap-4">
                                 <div className="text-sm text-slate-500">
                                   Showing <span className="text-slate-900 font-semibold">{startIndex + 1}</span> to{' '}
                                   <span className="text-slate-900 font-semibold">{Math.min(endIndex, monthUsers.length)}</span> of{' '}
@@ -452,7 +452,7 @@ export default function UserManagement() {
                                         setPageSize(Number(e.target.value))
                                         setCurrentPage(1)
                                       }}
-                                      className="bg-white border border-slate-200 rounded-lg px-2 py-1 text-sm focus:ring-2 focus:ring-[#4f46e5] focus:outline-none"
+                                      className="bg-white border border-slate-200 rounded-lg px-2 py-1 text-sm focus:ring-2 focus:ring-[#0f766e] focus:outline-none"
                                     >
                                       <option value={10}>10</option>
                                       <option value={25}>25</option>
@@ -499,18 +499,18 @@ export default function UserManagement() {
       {selectedUser && (
         <div className="modal-overlay" onClick={() => setSelectedUser(null)}>
           <div
-            className="bg-white w-full max-w-5xl mx-4 md:mx-auto my-8 max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl border border-[#4f46e5]/10"
+            className="bg-white w-full max-w-5xl mx-4 md:mx-auto my-8 max-h-[90vh] overflow-y-auto rounded-xl shadow-2xl border border-teal-900/10"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Sticky Header */}
-            <div className="sticky top-0 bg-white/95 backdrop-blur-md flex items-center justify-between p-4 sm:p-6 border-b border-slate-100 z-10">
+            <div className="sticky top-0 bg-white/95 backdrop-blur-md flex items-center justify-between p-4 sm:p-6 border-b border-teal-900/10 z-10">
               <div>
                 <h3 className="text-xl font-bold text-slate-900">Application Review</h3>
                 <p className="text-sm text-slate-500">{selectedUser.first_name}&apos;s profile</p>
               </div>
               <button
                 onClick={() => setSelectedUser(null)}
-                className="p-2 text-slate-400 hover:text-[#4f46e5] hover:bg-slate-50 rounded-xl transition-all"
+                className="p-2 text-slate-400 hover:text-[#0f766e] hover:bg-slate-50 rounded-xl transition-all"
               >
                 <XCircle className="w-6 h-6" />
               </button>
@@ -519,10 +519,10 @@ export default function UserManagement() {
             {/* Scrollable Content */}
             <div className="p-4 sm:p-8 space-y-10">
               <section className="space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-50 p-4 rounded-xl border border-teal-900/10">
                   <div className="flex items-center space-x-4">
                     <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center">
-                      <Clock className="w-6 h-6 text-[#ef4444]" />
+                      <Clock className="w-6 h-6 text-[#f59e0b]" />
                     </div>
                     <div>
                       <p className="text-xs font-bold text-slate-400 uppercase tracking-tight">Status</p>
@@ -546,7 +546,7 @@ export default function UserManagement() {
                       <p className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">
                         {item.label}
                       </p>
-                      <div className="bg-slate-50/50 border border-slate-100 rounded-2xl p-4 shadow-sm">
+                      <div className="bg-[#f8faf7] border border-teal-900/10 rounded-xl p-4 shadow-sm">
                         <p className={`text-slate-900 font-semibold leading-relaxed ${item.valueClassName || ''}`}>
                           {item.value}
                         </p>
@@ -558,21 +558,21 @@ export default function UserManagement() {
 
               <section className="space-y-4">
                 <div className="flex items-center space-x-2 mb-2">
-                  <FileText className="w-5 h-5 text-[#4f46e5]" />
+                  <FileText className="w-5 h-5 text-[#0f766e]" />
                   <h4 className="text-lg font-bold text-slate-900">Verification Documents</h4>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {documentItems.map(({ label, url }) => (
                     <div
                       key={label}
-                      className="group bg-white border border-slate-100 rounded-2xl p-4 shadow-sm hover:border-[#4f46e5]/30 transition-all"
+                      className="group bg-white border border-teal-900/10 rounded-xl p-4 shadow-sm hover:border-[#0f766e]/30 transition-all"
                     >
                       <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
                         {label}
                       </p>
                       {url ? (
                         <div className="space-y-3">
-                          <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden border border-slate-100 shadow-inner group-hover:shadow-md transition-shadow">
+                          <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden border border-teal-900/10 shadow-inner group-hover:shadow-md transition-shadow">
                             <Image
                               src={url}
                               alt={label}
@@ -584,7 +584,7 @@ export default function UserManagement() {
                           </div>
                           <button
                             onClick={() => window.open(url, '_blank')}
-                            className="w-full flex items-center justify-center space-x-2 text-xs font-bold text-[#4f46e5] bg-[#4f46e5]/5 py-2.5 rounded-xl hover:bg-[#4f46e5] hover:text-white transition-all"
+                            className="w-full flex items-center justify-center space-x-2 text-xs font-bold text-[#0f766e] bg-[#0f766e]/5 py-2.5 rounded-xl hover:bg-[#0f766e] hover:text-white transition-all"
                           >
                             <Eye className="w-4 h-4" />
                             <span>Preview Full Image</span>
@@ -601,7 +601,7 @@ export default function UserManagement() {
                 </div>
               </section>
 
-              <section className="pt-6 border-t border-slate-100">
+              <section className="pt-6 border-t border-teal-900/10">
                 <div className="flex flex-col sm:flex-row gap-4">
                   {selectedUser.status === 'pending' && (
                     <>
@@ -614,7 +614,7 @@ export default function UserManagement() {
                       </button>
                       <button
                         onClick={() => updateUserStatus(selectedUser.id, 'rejected')}
-                        className="flex-1 py-4 border-2 border-slate-100 text-slate-400 font-bold rounded-2xl hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all flex items-center justify-center space-x-3"
+                        className="flex-1 py-4 border-2 border-teal-900/10 text-slate-400 font-bold rounded-xl hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all flex items-center justify-center space-x-3"
                       >
                         <XCircle className="w-5 h-5" />
                         <span className="text-lg">Reject</span>
@@ -625,7 +625,7 @@ export default function UserManagement() {
                   {selectedUser.status === 'approved' && (
                     <button
                       onClick={() => generateOffer(selectedUser.id)}
-                      className="btn-primary w-full py-4 flex items-center justify-center space-x-3 shadow-xl shadow-[#4f46e5]/20 animate-pulse"
+                      className="btn-primary w-full py-4 flex items-center justify-center space-x-3 shadow-xl shadow-[#0f766e]/20 animate-pulse"
                     >
                       <FileDown className="w-6 h-6" />
                       <span className="text-lg">Generate & Download Offer Letter</span>
@@ -635,7 +635,7 @@ export default function UserManagement() {
                   {selectedUser.status === 'offer_generated' && (
                     <button
                       onClick={() => generateOffer(selectedUser.id)}
-                      className="w-full py-4 bg-slate-100 text-slate-500 font-bold rounded-2xl flex items-center justify-center space-x-3 hover:bg-slate-200 transition-all"
+                      className="w-full py-4 bg-slate-100 text-slate-500 font-bold rounded-xl flex items-center justify-center space-x-3 hover:bg-slate-200 transition-all"
                     >
                       <RefreshCw className="w-5 h-5" />
                       <span className="text-lg">Regenerate Offer Letter</span>

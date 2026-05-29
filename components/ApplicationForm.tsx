@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { supabase, Role, Tenure } from '@/lib/supabase'
 import { getAvailableTenuresForRole } from '@/lib/role-tenure-mapping'
 import { ServerFileUpload } from '@/lib/server-file-upload'
@@ -56,10 +56,13 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
   const [error, setError] = useState('')
   const [availableTenures, setAvailableTenures] = useState<Tenure[]>([])
   const [uploadProgress, setUploadProgress] = useState<{ [key: string]: boolean }>({})
+  const [missingFiles, setMissingFiles] = useState<string[]>([])
 
   // Generate a STABLE session ID once when the form mounts.
   // Using this instead of a timestamp-at-submit means retries overwrite the same files.
   const formSessionId = useRef<string>(`session_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`)
+  const errorRef = useRef<HTMLDivElement>(null)
+  const documentsRef = useRef<HTMLDivElement>(null)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -101,6 +104,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
       const validation = ServerFileUpload.validateFile(file)
       if (!validation.valid) {
         setError(validation.error || 'Invalid file')
+        e.target.value = '' // Clear the invalid file from the input visually
         return
       }
 
@@ -108,15 +112,23 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
         ...prev,
         [name]: file
       }))
+      setMissingFiles(prev => prev.filter(f => f !== name))
       setError('') // Clear any previous errors
     }
   }
+
+  const scrollToError = useCallback(() => {
+    setTimeout(() => {
+      errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }, 100)
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
-
+    setMissingFiles([])
+    
     try {
       // Mandatory field validation
       const requiredText = [
@@ -139,9 +151,21 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
       const phoneOk = /[0-9]{7,}/.test(formData.phone.replace(/\D/g, ''))
       if (!phoneOk) throw new Error('Please enter a valid phone number.')
 
-      // File checks (all required)
-      if (!formData.aadhar_front || !formData.aadhar_back || !formData.photo || !formData.college_id || !formData.marksheet_12th) {
-        throw new Error('Please upload all required documents.')
+      // File checks (all required) – collect missing names for helpful feedback
+      const fileChecks = [
+        { key: 'aadhar_front', label: 'Aadhar Card (Front)' },
+        { key: 'aadhar_back', label: 'Aadhar Card (Back)' },
+        { key: 'photo', label: 'Candidate Photo' },
+        { key: 'college_id', label: 'College ID Card' },
+        { key: 'marksheet_12th', label: '12th Marksheet' },
+      ] as const
+      const missing = fileChecks.filter(f => !formData[f.key as keyof FormData]).map(f => f.label)
+      if (missing.length > 0) {
+        setMissingFiles(missing.map(l => fileChecks.find(f => f.label === l)!.key))
+        setTimeout(() => {
+          documentsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }, 100)
+        throw new Error(`Please upload the following required documents: ${missing.join(', ')}.`)
       }
 
       // Use the stable session ID — retries will overwrite the same files
@@ -245,6 +269,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
       }, 2000)
     } catch (err: any) {
       setError(err.message || 'An error occurred while submitting your application')
+      scrollToError()
     } finally {
       setLoading(false)
       setUploadProgress({})
@@ -287,7 +312,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6 flex items-center">
+          <div ref={errorRef} className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6 flex items-center">
             <AlertCircle className="w-5 h-5 text-red-400 mr-3" />
             <span className="text-red-400">{error}</span>
           </div>
@@ -439,8 +464,8 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
           </div>
 
           {/* Document Uploads */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">
+          <div className="space-y-4" ref={documentsRef}>
+            <h3 className="text-lg font-semibold text-slate-800 border-b border-teal-900/10 pb-2">
               Required Documents
             </h3>
 
@@ -455,7 +480,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                   onChange={handleFileChange}
                   accept="image/*"
                   required
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#4f46e5] file:text-white hover:file:bg-[#4338ca] transition-colors"
+                  className={`w-full px-3 py-2 bg-white border rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#0f766e] file:text-white hover:file:bg-[#115e59] transition-colors ${missingFiles.includes('aadhar_front') ? 'border-red-400 ring-2 ring-red-400/30' : 'border-teal-900/10'}`}
                 />
                 <p className="text-xs text-slate-400 mt-1">Upload a clear image (JPG/PNG)</p>
               </div>
@@ -470,7 +495,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                   onChange={handleFileChange}
                   accept="image/*"
                   required
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#4f46e5] file:text-white hover:file:bg-[#4338ca] transition-colors"
+                  className={`w-full px-3 py-2 bg-white border rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#0f766e] file:text-white hover:file:bg-[#115e59] transition-colors ${missingFiles.includes('aadhar_back') ? 'border-red-400 ring-2 ring-red-400/30' : 'border-teal-900/10'}`}
                 />
                 <p className="text-xs text-slate-400 mt-1">Upload a clear image (JPG/PNG)</p>
               </div>
@@ -485,7 +510,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                   onChange={handleFileChange}
                   accept="image/*"
                   required
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#4f46e5] file:text-white hover:file:bg-[#4338ca] transition-colors"
+                  className={`w-full px-3 py-2 bg-white border rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#0f766e] file:text-white hover:file:bg-[#115e59] transition-colors ${missingFiles.includes('photo') ? 'border-red-400 ring-2 ring-red-400/30' : 'border-teal-900/10'}`}
                 />
                 <p className="text-xs text-slate-400 mt-1">Passport size photo (JPG/PNG)</p>
               </div>
@@ -500,7 +525,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                   onChange={handleFileChange}
                   accept="image/*"
                   required
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#4f46e5] file:text-white hover:file:bg-[#4338ca] transition-colors"
+                  className={`w-full px-3 py-2 bg-white border rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#0f766e] file:text-white hover:file:bg-[#115e59] transition-colors ${missingFiles.includes('college_id') ? 'border-red-400 ring-2 ring-red-400/30' : 'border-teal-900/10'}`}
                 />
                 <p className="text-xs text-slate-400 mt-1">Student ID card image (JPG/PNG)</p>
               </div>
@@ -515,7 +540,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                   onChange={handleFileChange}
                   accept="image/*"
                   required
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#4f46e5] file:text-white hover:file:bg-[#4338ca] transition-colors"
+                  className={`w-full px-3 py-2 bg-white border rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#0f766e] file:text-white hover:file:bg-[#115e59] transition-colors ${missingFiles.includes('marksheet_12th') ? 'border-red-400 ring-2 ring-red-400/30' : 'border-teal-900/10'}`}
                 />
                 <p className="text-xs text-slate-400 mt-1">Class 12 certificate image (JPG/PNG)</p>
               </div>

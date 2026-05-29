@@ -35,6 +35,7 @@ async function fetchWithTimeout(
 
 // Server-side file upload helper with client-side compression
 export class ServerFileUpload {
+    private static readonly MAX_UPLOAD_RETRIES = 3
     // Aggressive compression settings for maximum free tier capacity
     private static COMPRESSION_OPTIONS = {
         maxSizeMB: 0.2, // Target 200KB max per image (Aggressive for free tier)
@@ -71,25 +72,38 @@ export class ServerFileUpload {
             // Convert file to base64
             const base64 = await this.fileToBase64(fileToUpload)
 
-            // Send to server API
-            const response = await fetchWithTimeout('/api/upload-file', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-user-id': userId
-                },
-                body: JSON.stringify({
-                    fileData: base64,
-                    fileName: fileToUpload.name,
-                    contentType: fileToUpload.type,
-                    folder,
-                    userId
-                })
-            }, 60_000)
+            let response: Response | null = null
+            let lastError = ''
+            for (let attempt = 1; attempt <= this.MAX_UPLOAD_RETRIES; attempt++) {
+                try {
+                    response = await fetchWithTimeout('/api/upload-file', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-user-id': userId
+                        },
+                        body: JSON.stringify({
+                            fileData: base64,
+                            fileName: fileToUpload.name,
+                            contentType: fileToUpload.type,
+                            folder,
+                            userId
+                        })
+                    }, 60_000)
 
-            if (!response.ok) {
-                const message = await readErrorMessage(response)
-                throw new Error(message || 'Upload failed')
+                    if (response.ok) break
+                    lastError = await readErrorMessage(response)
+                } catch (error: any) {
+                    lastError = error?.message || 'Network error during upload'
+                }
+
+                if (attempt < this.MAX_UPLOAD_RETRIES) {
+                    await new Promise((resolve) => setTimeout(resolve, attempt * 1200))
+                }
+            }
+
+            if (!response || !response.ok) {
+                throw new Error(lastError || 'Upload failed')
             }
 
             const result = await response.json()

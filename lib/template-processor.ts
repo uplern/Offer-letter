@@ -55,14 +55,9 @@ async function simulateTemplateProcessing(
 }
 
 // Template mapping for your existing files
-export const TEMPLATE_FILES = {
-  'SM_2M': 'SM_2M.docx',
-  'SM_4M': 'SM_4M.docx', 
-  'TA_1M': 'TA_1M.docx',
-  'TA_2M': 'TA_2m.docx', // Note: your file has lowercase 'm'
-  'TA_4M': 'TA_4M.docx',
-  'TASM_2M': 'TASM_2M.docx',
-  'TASM_4M': 'TASM_4M.docx'
+export const TEMPLATE_FILES: Record<string, string> = {
+  'HR_2M': 'HR_2M.docx',
+  'BD_2M': 'BD_2M.docx'
 }
 
 // Validate template exists
