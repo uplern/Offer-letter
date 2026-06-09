@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!ok) return res.status(401).json({ error: 'Invalid credentials' })
 
     const token = createAdminSessionToken(admin.id)
-    res.setHeader('Set-Cookie', `${ADMIN_SESSION_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=86400`)
+    res.setHeader('Set-Cookie', `${ADMIN_SESSION_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=86400`)
     return res.status(200).json({ success: true, admin: { id: admin.id, email: admin.email, name: admin.name || 'Admin' } })
   } catch {
     return res.status(500).json({ error: 'Login failed' })
