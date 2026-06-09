@@ -229,24 +229,39 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
         ...fileUrls
       }
 
-      // Insert into database
-      const { data: newUsers, error: insertError } = await supabase
+      // Check if user already exists with this email
+      const { data: existingUsers, error: checkError } = await supabase
         .from('users')
-        .insert([submitData])
-        .select()
+        .select('*')
+        .eq('email', formData.email)
 
-      if (insertError) {
-        if (insertError.code === '23505' || insertError.message?.includes('users_email_key')) {
-          throw new Error('An application with this email address has already been submitted.')
+      if (checkError) {
+        throw new Error(checkError.message || 'Failed to verify existing application status.')
+      }
+
+      let newUser
+
+      if (existingUsers && existingUsers.length > 0) {
+        // User already exists (e.g., previous try inserted the data but failed to generate the PDF).
+        // Reuse the existing record to generate/regenerate the offer letter.
+        newUser = existingUsers[0]
+      } else {
+        // Insert new user into database
+        const { data: newUsers, error: insertError } = await supabase
+          .from('users')
+          .insert([submitData])
+          .select()
+
+        if (insertError) {
+          throw new Error(insertError.message || 'An error occurred while saving your details.')
         }
-        throw new Error(insertError.message || 'An error occurred while saving your details.')
-      }
 
-      if (!newUsers || newUsers.length === 0) {
-        throw new Error('Application submitted but failed to retrieve reference ID')
-      }
+        if (!newUsers || newUsers.length === 0) {
+          throw new Error('Application submitted but failed to retrieve reference ID')
+        }
 
-      const newUser = newUsers[0]
+        newUser = newUsers[0]
+      }
 
       // Generate Offer Letter immediately using selected Role & Tenure
       const selectedRole = roles.find(r => r.id === formData.role_id)
