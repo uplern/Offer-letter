@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { supabase, Role, Tenure } from '@/lib/supabase'
 import { getAvailableTenuresForRole } from '@/lib/role-tenure-mapping'
 import { ServerFileUpload } from '@/lib/server-file-upload'
-import { X, Send, CheckCircle, AlertCircle } from 'lucide-react'
+import { X, Send, CheckCircle, AlertCircle, Download, Loader2, Mail } from 'lucide-react'
 import { generateOfferLetter } from '@/lib/docx-generator'
 
 interface ApplicationFormProps {
@@ -57,6 +57,81 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
   const [availableTenures, setAvailableTenures] = useState<Tenure[]>([])
   const [uploadProgress, setUploadProgress] = useState<{ [key: string]: boolean }>({})
   const [missingFiles, setMissingFiles] = useState<string[]>([])
+
+  // Email verification states
+  const [showEmailCheckModal, setShowEmailCheckModal] = useState(true)
+  const [checkEmail, setCheckEmail] = useState('')
+  const [checkLoading, setCheckLoading] = useState(false)
+  const [existingUser, setExistingUser] = useState<any>(null)
+  const [checkError, setCheckError] = useState('')
+  const [downloadingLetter, setDownloadingLetter] = useState(false)
+  const [downloadError, setDownloadError] = useState('')
+  const [downloadSuccess, setDownloadSuccess] = useState(false)
+
+  const handleEmailCheck = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!checkEmail || !/.+@.+\..+/.test(checkEmail)) {
+      setCheckError('Please enter a valid email address.')
+      return
+    }
+    setCheckLoading(true)
+    setCheckError('')
+    setExistingUser(null)
+
+    try {
+      const { data, error: queryError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', checkEmail.trim().toLowerCase())
+
+      if (queryError) {
+        throw new Error(queryError.message || 'Failed to verify email.')
+      }
+
+      if (data && data.length > 0) {
+        setExistingUser(data[0])
+      } else {
+        // User does not exist, close modal and prefill email in form
+        setFormData(prev => ({ ...prev, email: checkEmail.trim().toLowerCase() }))
+        setShowEmailCheckModal(false)
+      }
+    } catch (err: any) {
+      setCheckError(err.message || 'Something went wrong while verifying email.')
+    } finally {
+      setCheckLoading(false)
+    }
+  }
+
+  const handleDownloadExistingOffer = async () => {
+    if (!existingUser) return
+    setDownloadingLetter(true)
+    setDownloadError('')
+    setDownloadSuccess(false)
+
+    try {
+      const selectedRole = roles.find(r => r.id === existingUser.role_id)
+      const selectedTenure = tenures.find(t => t.id === existingUser.tenure_id)
+
+      if (!selectedRole || !selectedTenure) {
+        throw new Error('Associated position or duration not found.')
+      }
+
+      await generateOfferLetter({
+        candidateName: `${existingUser.first_name} ${existingUser.last_name}`.trim(),
+        roleCode: selectedRole.code,
+        tenureMonths: selectedTenure.months,
+        roleName: selectedRole.name,
+        tenureLabel: selectedTenure.label,
+        userId: existingUser.id
+      })
+
+      setDownloadSuccess(true)
+    } catch (err: any) {
+      setDownloadError(err.message || 'Failed to download offer letter. Please try again.')
+    } finally {
+      setDownloadingLetter(false)
+    }
+  }
 
   // Generate a STABLE session ID once when the form mounts.
   // Using this instead of a timestamp-at-submit means retries overwrite the same files.
@@ -314,285 +389,400 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
             <X className="w-6 h-6" />
           </button>
         )}
+        {showEmailCheckModal ? (
+          <div className="py-2">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-teal-50 text-[#0f766e] mb-3">
+                <Mail className="w-6 h-6" />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 mb-1">Verify Your Email</h2>
+              <p className="text-slate-400 text-sm font-light">
+                Please enter your email to check for any existing applications or letters.
+              </p>
+            </div>
 
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-slate-900 mb-1">Begin Your Journey</h2>
-          <p className="text-slate-400 text-sm font-light">Complete your professional enrollment below</p>
-        </div>
+            {checkError && (
+              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6 flex items-center">
+                <AlertCircle className="w-5 h-5 text-red-400 mr-3 flex-shrink-0" />
+                <span className="text-red-400 text-sm">{checkError}</span>
+              </div>
+            )}
 
-        {/* Success Message */}
-        {success && (
-          <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4 mb-6 flex items-center">
-            <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-            <span className="text-green-400">Application submitted successfully! Our HR team will contact you shortly.</span>
+            {!existingUser ? (
+              <form onSubmit={handleEmailCheck} className="space-y-4">
+                <div>
+                  <label className="block text-slate-700 text-sm font-medium mb-1.5">Email Address</label>
+                  <input
+                    type="email"
+                    value={checkEmail}
+                    onChange={(e) => setCheckEmail(e.target.value)}
+                    required
+                    className="input-field w-full"
+                    placeholder="professional@email.com"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={checkLoading}
+                  className="w-full btn-primary py-3 px-6 flex items-center justify-center rounded-xl space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {checkLoading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>Checking database...</span>
+                    </>
+                  ) : (
+                    <span>Continue</span>
+                  )}
+                </button>
+              </form>
+            ) : (
+              <div className="space-y-5 text-center">
+                <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 text-left space-y-3">
+                  <div className="flex items-center space-x-2.5 text-emerald-800 font-semibold">
+                    <CheckCircle className="w-5 h-5 text-emerald-600" />
+                    <span>Application Found!</span>
+                  </div>
+                  <div className="text-sm text-slate-600 space-y-1.5 pt-1">
+                    <p><strong>Name:</strong> {existingUser.first_name} {existingUser.last_name}</p>
+                    <p><strong>Email:</strong> {existingUser.email}</p>
+                    <p><strong>Status:</strong> <span className="capitalize px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">{existingUser.status}</span></p>
+                  </div>
+                </div>
+
+                {downloadError && (
+                  <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-center text-left">
+                    <AlertCircle className="w-5 h-5 text-red-400 mr-3 flex-shrink-0" />
+                    <span className="text-red-400 text-sm">{downloadError}</span>
+                  </div>
+                )}
+
+                {downloadSuccess && (
+                  <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4 flex items-center text-left">
+                    <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
+                    <span className="text-green-400 text-sm">Offer letter downloaded successfully!</span>
+                  </div>
+                )}
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                  <button
+                    onClick={handleDownloadExistingOffer}
+                    disabled={downloadingLetter}
+                    className="flex-1 btn-primary py-3 px-6 flex items-center justify-center rounded-xl space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {downloadingLetter ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span>Generating PDF...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-5 h-5" />
+                        <span>Download Offer Letter</span>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setExistingUser(null)
+                      setCheckEmail('')
+                      setCheckError('')
+                      setDownloadError('')
+                      setDownloadSuccess(false)
+                    }}
+                    className="btn-secondary py-3 px-6 rounded-xl text-sm font-medium border border-slate-200 hover:bg-slate-50 transition-colors"
+                  >
+                    Check Another Email
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
+        ) : (
+          <>
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-slate-900 mb-1">Begin Your Journey</h2>
+              <p className="text-slate-400 text-sm font-light">Complete your professional enrollment below</p>
+            </div>
+
+            {/* Success Message */}
+            {success && (
+              <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4 mb-6 flex items-center">
+                <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
+                <span className="text-green-400">Application submitted successfully! Our HR team will contact you shortly.</span>
+              </div>
+            )}
+
+            {/* Error Message */}
+            {error && (
+              <div ref={errorRef} className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6 flex items-center">
+                <AlertCircle className="w-5 h-5 text-red-400 mr-3" />
+                <span className="text-red-400">{error}</span>
+              </div>
+            )}
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+
+              {/* Name Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-slate-700 text-sm font-medium mb-1.5">First Name</label>
+                  <input
+                    type="text"
+                    name="first_name"
+                    value={formData.first_name}
+                    onChange={handleChange}
+                    required
+                    className="input-field w-full"
+                    placeholder="Enter first name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 text-sm font-medium mb-1.5">Last Name</label>
+                  <input
+                    type="text"
+                    name="last_name"
+                    value={formData.last_name}
+                    onChange={handleChange}
+                    required
+                    className="input-field w-full"
+                    placeholder="Enter last name"
+                  />
+                </div>
+              </div>
+
+              {/* Parent Name */}
+              <div>
+                <label className="block text-slate-700 text-sm font-medium mb-1.5">{"Father's Name"}</label>
+                <input
+                  type="text"
+                  name="father_name"
+                  value={formData.father_name}
+                  onChange={handleChange}
+                  required
+                  className="input-field w-full"
+                  placeholder="Father's name"
+                />
+              </div>
+
+              {/* Contact Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-slate-700 text-sm font-medium mb-1.5">Email Address</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    className="input-field w-full bg-slate-50 cursor-not-allowed"
+                    placeholder="professional@email.com"
+                    disabled
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 text-sm font-medium mb-1.5">Phone Number</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                    className="input-field w-full"
+                    placeholder="Contact number"
+                  />
+                </div>
+              </div>
+
+              {/* College / University */}
+              <div>
+                <label className="block text-slate-700 text-sm font-medium mb-1.5">College / University</label>
+                <input
+                  type="text"
+                  name="college_name"
+                  value={formData.college_name}
+                  onChange={handleChange}
+                  required
+                  className="input-field w-full"
+                  placeholder="Enter college or university name"
+                />
+              </div>
+
+              {/* Address */}
+              <div>
+                <label className="block text-slate-700 text-sm font-medium mb-1.5">Address</label>
+                <textarea
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  required
+                  rows={3}
+                  className="input-field w-full"
+                  placeholder="Enter full address"
+                />
+              </div>
+
+              {/* Position and Duration */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-slate-700 text-sm font-medium mb-1.5">Position</label>
+                  <select
+                    name="role_id"
+                    value={formData.role_id}
+                    onChange={handleChange}
+                    required
+                    className="input-field w-full"
+                  >
+                    <option value="">Select Position</option>
+                    {roles.map((role) => (
+                      <option key={role.id} value={role.id}>
+                        {role.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-slate-700 text-sm font-medium mb-1.5">Duration</label>
+                  <select
+                    name="tenure_id"
+                    value={formData.tenure_id}
+                    onChange={handleChange}
+                    required
+                    disabled={!formData.role_id}
+                    className="input-field w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <option value="">
+                      {!formData.role_id ? 'Select Role First' : 'Select Duration'}
+                    </option>
+                    {availableTenures.map((tenure) => (
+                      <option key={tenure.id} value={tenure.id}>
+                        {tenure.label}
+                      </option>
+                    ))}
+                  </select>
+                  {formData.role_id && availableTenures.length === 0 && (
+                    <p className="text-xs text-amber-400 mt-1">No tenures available for selected role</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Document Uploads */}
+              <div className="space-y-4" ref={documentsRef}>
+                <h3 className="text-lg font-semibold text-slate-800 border-b border-teal-900/10 pb-2">
+                  Required Documents
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-slate-700 text-sm font-medium mb-1.5">
+                      Aadhar Card (Front) <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      type="file"
+                      name="aadhar_front"
+                      onChange={handleFileChange}
+                      accept="image/*"
+                      required
+                      className={`w-full px-3 py-2 bg-white border rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#0f766e] file:text-white hover:file:bg-[#115e59] transition-colors ${missingFiles.includes('aadhar_front') ? 'border-red-400 ring-2 ring-red-400/30' : 'border-teal-900/10'}`}
+                    />
+                    <p className="text-xs text-slate-400 mt-1">Upload a clear image (JPG/PNG)</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-700 text-sm font-medium mb-1.5">
+                      Aadhar Card (Back) <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      type="file"
+                      name="aadhar_back"
+                      onChange={handleFileChange}
+                      accept="image/*"
+                      required
+                      className={`w-full px-3 py-2 bg-white border rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#0f766e] file:text-white hover:file:bg-[#115e59] transition-colors ${missingFiles.includes('aadhar_back') ? 'border-red-400 ring-2 ring-red-400/30' : 'border-teal-900/10'}`}
+                    />
+                    <p className="text-xs text-slate-400 mt-1">Upload a clear image (JPG/PNG)</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-700 text-sm font-medium mb-1.5">
+                      Candidate Photo <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      type="file"
+                      name="photo"
+                      onChange={handleFileChange}
+                      accept="image/*"
+                      required
+                      className={`w-full px-3 py-2 bg-white border rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#0f766e] file:text-white hover:file:bg-[#115e59] transition-colors ${missingFiles.includes('photo') ? 'border-red-400 ring-2 ring-red-400/30' : 'border-teal-900/10'}`}
+                    />
+                    <p className="text-xs text-slate-400 mt-1">Passport size photo (JPG/PNG)</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-700 text-sm font-medium mb-1.5">
+                      College ID Card <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      type="file"
+                      name="college_id"
+                      onChange={handleFileChange}
+                      accept="image/*"
+                      required
+                      className={`w-full px-3 py-2 bg-white border rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#0f766e] file:text-white hover:file:bg-[#115e59] transition-colors ${missingFiles.includes('college_id') ? 'border-red-400 ring-2 ring-red-400/30' : 'border-teal-900/10'}`}
+                    />
+                    <p className="text-xs text-slate-400 mt-1">Student ID card image (JPG/PNG)</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-700 text-sm font-medium mb-1.5">
+                      12th Marksheet <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      type="file"
+                      name="marksheet_12th"
+                      onChange={handleFileChange}
+                      accept="image/*"
+                      required
+                      className={`w-full px-3 py-2 bg-white border rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#0f766e] file:text-white hover:file:bg-[#115e59] transition-colors ${missingFiles.includes('marksheet_12th') ? 'border-red-400 ring-2 ring-red-400/30' : 'border-teal-900/10'}`}
+                    />
+                    <p className="text-xs text-slate-400 mt-1">Class 12 certificate image (JPG/PNG)</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex justify-center mt-8">
+                <button
+                  type="submit"
+                  disabled={loading || success}
+                  className={`${loading ? 'btn-loading-shimmer' : 'btn-primary disabled:opacity-50'} w-full sm:w-auto sm:px-8 text-base py-3 flex items-center justify-center rounded-full space-x-2 disabled:cursor-not-allowed`}
+                  aria-live="polite"
+                  aria-busy={loading}
+                >
+                  {loading ? (
+                    <>
+                      <div className="loading-spinner" aria-hidden="true"></div>
+                      <span className="font-medium tracking-wide">Fetching Info...</span>
+                    </>
+                  ) : success ? (
+                    <>
+                      <CheckCircle className="w-5 h-5" />
+                      <span>Submitted Successfully</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5" />
+                      <span className="font-semibold">Submit Details</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </>
         )}
-
-        {/* Error Message */}
-        {error && (
-          <div ref={errorRef} className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6 flex items-center">
-            <AlertCircle className="w-5 h-5 text-red-400 mr-3" />
-            <span className="text-red-400">{error}</span>
-          </div>
-        )}
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-
-          {/* Name Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-slate-700 text-sm font-medium mb-1.5">First Name</label>
-              <input
-                type="text"
-                name="first_name"
-                value={formData.first_name}
-                onChange={handleChange}
-                required
-                className="input-field w-full"
-                placeholder="Enter first name"
-              />
-            </div>
-            <div>
-              <label className="block text-slate-700 text-sm font-medium mb-1.5">Last Name</label>
-              <input
-                type="text"
-                name="last_name"
-                value={formData.last_name}
-                onChange={handleChange}
-                required
-                className="input-field w-full"
-                placeholder="Enter last name"
-              />
-            </div>
-          </div>
-
-          {/* Parent Name */}
-          <div>
-            <label className="block text-slate-700 text-sm font-medium mb-1.5">{"Father's Name"}</label>
-            <input
-              type="text"
-              name="father_name"
-              value={formData.father_name}
-              onChange={handleChange}
-              required
-              className="input-field w-full"
-              placeholder="Father's name"
-            />
-          </div>
-
-          {/* Contact Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-slate-700 text-sm font-medium mb-1.5">Email Address</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="input-field w-full"
-                placeholder="professional@email.com"
-              />
-            </div>
-            <div>
-              <label className="block text-slate-700 text-sm font-medium mb-1.5">Phone Number</label>
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                required
-                className="input-field w-full"
-                placeholder="Contact number"
-              />
-            </div>
-          </div>
-
-          {/* College / University */}
-          <div>
-            <label className="block text-slate-700 text-sm font-medium mb-1.5">College / University</label>
-            <input
-              type="text"
-              name="college_name"
-              value={formData.college_name}
-              onChange={handleChange}
-              required
-              className="input-field w-full"
-              placeholder="Enter college or university name"
-            />
-          </div>
-
-          {/* Address */}
-          <div>
-            <label className="block text-slate-700 text-sm font-medium mb-1.5">Address</label>
-            <textarea
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              required
-              rows={3}
-              className="input-field w-full"
-              placeholder="Enter full address"
-            />
-          </div>
-
-          {/* Position and Duration */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-slate-700 text-sm font-medium mb-1.5">Position</label>
-              <select
-                name="role_id"
-                value={formData.role_id}
-                onChange={handleChange}
-                required
-                className="input-field w-full"
-              >
-                <option value="">Select Position</option>
-                {roles.map((role) => (
-                  <option key={role.id} value={role.id}>
-                    {role.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-slate-700 text-sm font-medium mb-1.5">Duration</label>
-              <select
-                name="tenure_id"
-                value={formData.tenure_id}
-                onChange={handleChange}
-                required
-                disabled={!formData.role_id}
-                className="input-field w-full disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <option value="">
-                  {!formData.role_id ? 'Select Role First' : 'Select Duration'}
-                </option>
-                {availableTenures.map((tenure) => (
-                  <option key={tenure.id} value={tenure.id}>
-                    {tenure.label}
-                  </option>
-                ))}
-              </select>
-              {formData.role_id && availableTenures.length === 0 && (
-                <p className="text-xs text-amber-400 mt-1">No tenures available for selected role</p>
-              )}
-            </div>
-          </div>
-
-          {/* Document Uploads */}
-          <div className="space-y-4" ref={documentsRef}>
-            <h3 className="text-lg font-semibold text-slate-800 border-b border-teal-900/10 pb-2">
-              Required Documents
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-slate-700 text-sm font-medium mb-1.5">
-                  Aadhar Card (Front) <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="file"
-                  name="aadhar_front"
-                  onChange={handleFileChange}
-                  accept="image/*"
-                  required
-                  className={`w-full px-3 py-2 bg-white border rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#0f766e] file:text-white hover:file:bg-[#115e59] transition-colors ${missingFiles.includes('aadhar_front') ? 'border-red-400 ring-2 ring-red-400/30' : 'border-teal-900/10'}`}
-                />
-                <p className="text-xs text-slate-400 mt-1">Upload a clear image (JPG/PNG)</p>
-              </div>
-
-              <div>
-                <label className="block text-slate-700 text-sm font-medium mb-1.5">
-                  Aadhar Card (Back) <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="file"
-                  name="aadhar_back"
-                  onChange={handleFileChange}
-                  accept="image/*"
-                  required
-                  className={`w-full px-3 py-2 bg-white border rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#0f766e] file:text-white hover:file:bg-[#115e59] transition-colors ${missingFiles.includes('aadhar_back') ? 'border-red-400 ring-2 ring-red-400/30' : 'border-teal-900/10'}`}
-                />
-                <p className="text-xs text-slate-400 mt-1">Upload a clear image (JPG/PNG)</p>
-              </div>
-
-              <div>
-                <label className="block text-slate-700 text-sm font-medium mb-1.5">
-                  Candidate Photo <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="file"
-                  name="photo"
-                  onChange={handleFileChange}
-                  accept="image/*"
-                  required
-                  className={`w-full px-3 py-2 bg-white border rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#0f766e] file:text-white hover:file:bg-[#115e59] transition-colors ${missingFiles.includes('photo') ? 'border-red-400 ring-2 ring-red-400/30' : 'border-teal-900/10'}`}
-                />
-                <p className="text-xs text-slate-400 mt-1">Passport size photo (JPG/PNG)</p>
-              </div>
-
-              <div>
-                <label className="block text-slate-700 text-sm font-medium mb-1.5">
-                  College ID Card <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="file"
-                  name="college_id"
-                  onChange={handleFileChange}
-                  accept="image/*"
-                  required
-                  className={`w-full px-3 py-2 bg-white border rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#0f766e] file:text-white hover:file:bg-[#115e59] transition-colors ${missingFiles.includes('college_id') ? 'border-red-400 ring-2 ring-red-400/30' : 'border-teal-900/10'}`}
-                />
-                <p className="text-xs text-slate-400 mt-1">Student ID card image (JPG/PNG)</p>
-              </div>
-
-              <div>
-                <label className="block text-slate-700 text-sm font-medium mb-1.5">
-                  12th Marksheet <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="file"
-                  name="marksheet_12th"
-                  onChange={handleFileChange}
-                  accept="image/*"
-                  required
-                  className={`w-full px-3 py-2 bg-white border rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#0f766e] file:text-white hover:file:bg-[#115e59] transition-colors ${missingFiles.includes('marksheet_12th') ? 'border-red-400 ring-2 ring-red-400/30' : 'border-teal-900/10'}`}
-                />
-                <p className="text-xs text-slate-400 mt-1">Class 12 certificate image (JPG/PNG)</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Submit Button */}
-          <div className="flex justify-center mt-8">
-            <button
-              type="submit"
-              disabled={loading || success}
-              className={`${loading ? 'btn-loading-shimmer' : 'btn-primary disabled:opacity-50'} w-full sm:w-auto sm:px-8 text-base py-3 flex items-center justify-center rounded-full space-x-2 disabled:cursor-not-allowed`}
-              aria-live="polite"
-              aria-busy={loading}
-            >
-              {loading ? (
-                <>
-                  <div className="loading-spinner" aria-hidden="true"></div>
-                  <span className="font-medium tracking-wide">Fetching Info...</span>
-                </>
-              ) : success ? (
-                <>
-                  <CheckCircle className="w-5 h-5" />
-                  <span>Submitted Successfully</span>
-                </>
-              ) : (
-                <>
-                  <Send className="w-5 h-5" />
-                  <span className="font-semibold">Submit Details</span>
-                </>
-              )}
-            </button>
-          </div>
-        </form>
       </div>
     </div>
   )
