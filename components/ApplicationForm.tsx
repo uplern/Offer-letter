@@ -236,7 +236,10 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
         .select()
 
       if (insertError) {
-        throw insertError
+        if (insertError.code === '23505' || insertError.message?.includes('users_email_key')) {
+          throw new Error('An application with this email address has already been submitted.')
+        }
+        throw new Error(insertError.message || 'An error occurred while saving your details.')
       }
 
       if (!newUsers || newUsers.length === 0) {
