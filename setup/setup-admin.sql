@@ -29,12 +29,12 @@ BEGIN
   END IF;
 END $$;
 
--- 3. Insert your admin user (admin@system.com / admin123)
+-- 3. Insert your admin user (admin@uplern.uk / uplern@123)
 INSERT INTO admins (name, email, password_hash)
-VALUES ('System Admin', 'admin@system.com', '$2b$10$TUrJmxvLQrZaOIOQG1AfzuUtH3c6/YLPSdCYtW6b6PM/936emlE76')
+VALUES ('System Admin', 'admin@uplern.uk', '$2b$10$heusNqLhRfj29owUERiDROkbwYqXOznbl2ewykUQtUjz/pyvvVCLG')
 ON CONFLICT (email) DO UPDATE SET 
   name = EXCLUDED.name,
   password_hash = EXCLUDED.password_hash;
 
 -- 4. Verify the admin was created
-SELECT email, created_at FROM admins WHERE email = 'admin@system.com';
+SELECT email, created_at FROM admins WHERE email = 'admin@uplern.uk';
