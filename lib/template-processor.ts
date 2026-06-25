@@ -56,6 +56,7 @@ async function simulateTemplateProcessing(
 
 // Template mapping for your existing files
 export const TEMPLATE_FILES: Record<string, string> = {
+  'HR_1M': 'HR_1M.html',
   'HR_2M': 'HR_2M.docx',
   'BD_2M': 'BD_2M.docx'
 }

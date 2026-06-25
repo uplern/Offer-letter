@@ -12,8 +12,9 @@ export interface RoleTenureMapping {
 export const ROLE_TENURE_MAPPING: RoleTenureMapping = {
   'HR': {
     name: 'Human Resources',
-    availableTenures: [2], // 2M
+    availableTenures: [1, 2], // 1M, 2M
     templates: {
+      1: 'HR_1M',
       2: 'HR_2M'
     }
   },

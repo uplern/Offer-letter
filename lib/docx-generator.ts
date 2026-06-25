@@ -125,6 +125,6 @@ export async function generateOfferLetter(data: OfferLetterData): Promise<void> 
 
 // Template validation
 export function validateTemplate(templateCode: string): boolean {
-  const validTemplates = ['HR_2M', 'BD_2M']
+  const validTemplates = ['HR_1M', 'HR_2M', 'BD_2M']
   return validTemplates.includes(templateCode)
 }

@@ -80,11 +80,12 @@ INSERT INTO admins (name, email, password_hash) VALUES
 
 -- Default roles with available tenures
 INSERT INTO roles (name, code, description) VALUES 
-('Human Resources', 'HR', 'Human Resources operations - Available tenures: 2M'),
+('Human Resources', 'HR', 'Human Resources operations - Available tenures: 1M, 2M'),
 ('Business Development', 'BD', 'Business Development operations - Available tenures: 2M');
 
 -- Default tenures
 INSERT INTO tenures (label, months) VALUES 
+('1 Month', 1),
 ('2 Months', 2);
 
 -- Create indexes for better performance
