@@ -31,7 +31,7 @@ END $$;
 
 -- 3. Insert your admin user (admin@system.com / admin123)
 INSERT INTO admins (name, email, password_hash)
-VALUES ('System Admin', 'admin@system.com', '$2b$10$9gxBPYCVX5OR1orhzGtMmeoBR0THmHTQNvou5By1ZPWjPI8mJzDNe')
+VALUES ('System Admin', 'admin@system.com', '$2b$10$TUrJmxvLQrZaOIOQG1AfzuUtH3c6/YLPSdCYtW6b6PM/936emlE76')
 ON CONFLICT (email) DO UPDATE SET 
   name = EXCLUDED.name,
   password_hash = EXCLUDED.password_hash;

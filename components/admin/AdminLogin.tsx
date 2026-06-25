@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { AuthService } from '@/lib/auth'
 import { Shield, AlertCircle, Eye, EyeOff } from 'lucide-react'
 import Image from 'next/image'
 
@@ -32,9 +31,14 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
     setError('')
 
     try {
-      const result = await AuthService.authenticateAdmin(formData.email, formData.password)
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email, password: formData.password })
+      })
+      const result = await response.json()
 
-      if (result.success && result.admin) {
+      if (response.ok && result.success) {
         onLogin(result.admin)
       } else {
         throw new Error(result.error || 'Invalid email or password')

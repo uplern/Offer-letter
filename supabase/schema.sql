@@ -76,7 +76,7 @@ CREATE TABLE offer_letters (
 -- Insert default data
 -- Default admin user
 INSERT INTO admins (name, email, password_hash) VALUES 
-('System Admin', 'admin@system.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
+('System Admin', 'admin@system.com', '$2b$10$TUrJmxvLQrZaOIOQG1AfzuUtH3c6/YLPSdCYtW6b6PM/936emlE76');
 
 -- Default roles with available tenures
 INSERT INTO roles (name, code, description) VALUES 
