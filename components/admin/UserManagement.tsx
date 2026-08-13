@@ -78,12 +78,21 @@ export default function UserManagement() {
         return
       }
 
+      const generatedDate = user.created_at
+        ? new Date(user.created_at).toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          })
+        : undefined
+
       const data: OfferLetterData = {
         candidateName: `${user.first_name} ${user.last_name}`,
         roleCode: user.role.code,
         tenureMonths: user.tenure.months,
         roleName: user.role.name,
         tenureLabel: user.tenure.label,
+        generatedDate,
         userId: user.id
       }
 

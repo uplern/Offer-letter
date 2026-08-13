@@ -116,12 +116,21 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
         throw new Error('Associated position or duration not found.')
       }
 
+      const generatedDate = existingUser.created_at
+        ? new Date(existingUser.created_at).toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          })
+        : undefined
+
       await generateOfferLetter({
         candidateName: `${existingUser.first_name} ${existingUser.last_name}`.trim(),
         roleCode: selectedRole.code,
         tenureMonths: selectedTenure.months,
         roleName: selectedRole.name,
         tenureLabel: selectedTenure.label,
+        generatedDate,
         userId: existingUser.id
       })
 
@@ -345,12 +354,21 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
         throw new Error('Unable to generate offer letter: role or tenure not found')
       }
 
+      const generatedDate = newUser.created_at
+        ? new Date(newUser.created_at).toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          })
+        : undefined
+
       await generateOfferLetter({
         candidateName: `${formData.first_name} ${formData.last_name}`.trim(),
         roleCode: selectedRole.code,
         tenureMonths: selectedTenure.months,
         roleName: selectedRole.name,
         tenureLabel: selectedTenure.label,
+        generatedDate,
         userId: newUser.id
       })
 
