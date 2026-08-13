@@ -48,7 +48,8 @@ export class ServerFileUpload {
     static async uploadFile(
         file: File,
         folder: string,
-        userId: string
+        userId: string,
+        phone?: string
     ): Promise<{ url: string; path: string; error?: string }> {
         try {
             let fileToUpload = file
@@ -87,7 +88,8 @@ export class ServerFileUpload {
                             fileName: fileToUpload.name,
                             contentType: fileToUpload.type,
                             folder,
-                            userId
+                            userId,
+                            phone
                         })
                     }, 60_000)
 

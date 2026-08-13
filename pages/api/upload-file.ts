@@ -78,7 +78,7 @@ export default async function handler(
     }
 
     try {
-        const { fileData, fileName, contentType, folder, userId } = req.body
+        const { fileData, fileName, contentType, folder, userId, phone } = req.body
 
         if (!fileData || !fileName || !contentType || !folder || !userId) {
             return res.status(400).json({
@@ -120,9 +120,12 @@ export default async function handler(
             finalContentType = compressed.contentType
         }
 
-        // Use a stable filename (no timestamp) so retries overwrite the same file
+        // Use a human-readable, stable filename based on phone number so retries overwrite the same file
+        // Format: folder/doctype_phone.webp  e.g. photos/photo_9876543210.webp
         const ext = finalContentType === 'image/webp' ? 'webp' : (fileName.split('.').pop() || 'bin')
-        const uniqueFileName = `${folder}/${userId}.${ext}`
+        const cleanPhone = phone ? String(phone).replace(/\D/g, '').slice(0, 15) : ''
+        const identifier = cleanPhone || userId
+        const uniqueFileName = `${folder}/${folder}_${identifier}.${ext}`
 
         console.log('Uploading to Supabase:', {
             path: uniqueFileName,
