@@ -74,7 +74,21 @@ export default function UserManagement() {
     try {
       const user = users.find(u => u.id === userId)
       if (!user || !user.role || !user.tenure) {
-        alert('User data incomplete')
+        alert('User data incomplete (missing position or duration)')
+        return
+      }
+
+      // Strict validation for all required verification documents
+      const requiredDocs = [
+        'aadhar_front_url',
+        'aadhar_back_url',
+        'photo_url',
+        'college_id_url',
+        'marksheet_12th_url'
+      ]
+      const missingDocs = requiredDocs.filter(doc => !user[doc as keyof Candidate])
+      if (missingDocs.length > 0) {
+        alert(`Cannot generate offer. User is missing required documents: ${missingDocs.join(', ').replace(/_url/g, '').replace(/_/g, ' ')}`)
         return
       }
 
@@ -466,6 +480,7 @@ export default function UserManagement() {
                                       <option value={10}>10</option>
                                       <option value={25}>25</option>
                                       <option value={50}>50</option>
+                                      <option value={100}>100</option>
                                     </select>
                                   </div>
                                   <div className="flex items-center gap-2">
@@ -476,6 +491,9 @@ export default function UserManagement() {
                                     >
                                       Previous
                                     </button>
+                                    <span className="text-sm text-slate-500 font-medium">
+                                      Page {currentPage} of {Math.ceil(monthUsers.length / pageSize)}
+                                    </span>
                                     <button
                                       onClick={() => setCurrentPage(prev => Math.min(Math.ceil(monthUsers.length / pageSize), prev + 1))}
                                       disabled={currentPage === Math.ceil(monthUsers.length / pageSize)}

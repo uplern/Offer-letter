@@ -16,6 +16,16 @@ export const applicationSchema = z.object({
     .min(2, "Father's name must be at least 2 characters")
     .max(50, "Father's name must be less than 50 characters")
     .regex(/^[a-zA-Z\s]+$/, "Father's name can only contain letters and spaces"),
+
+  college_name: z.string()
+    .trim()
+    .min(2, 'College or university name must be at least 2 characters')
+    .max(150, 'College or university name must be less than 150 characters'),
+
+  address: z.string()
+    .trim()
+    .min(5, 'Address must be at least 5 characters')
+    .max(300, 'Address must be less than 300 characters'),
   
   email: z.string()
     .email('Please enter a valid email address')

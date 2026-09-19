@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { supabase, Role, Tenure } from '@/lib/supabase'
 import { getAvailableTenuresForRole } from '@/lib/role-tenure-mapping'
 import { ServerFileUpload } from '@/lib/server-file-upload'
-import { X, Send, CheckCircle, AlertCircle, Download, Loader2, Mail } from 'lucide-react'
+import { X, Send, CheckCircle, AlertCircle, Download, Loader2, Mail, ArrowRight, ShieldCheck, Sparkles, Check } from 'lucide-react'
 import { generateOfferLetter } from '@/lib/docx-generator'
 
 interface ApplicationFormProps {
@@ -12,6 +12,7 @@ interface ApplicationFormProps {
   tenures: Tenure[]
   onClose?: () => void
   inline?: boolean
+  onStepChange?: (step: number) => void
 }
 
 interface FormData {
@@ -32,7 +33,7 @@ interface FormData {
   marksheet_12th: File | null
 }
 
-export default function ApplicationForm({ roles, tenures, onClose, inline }: ApplicationFormProps) {
+export default function ApplicationForm({ roles, tenures, onClose, inline, onStepChange }: ApplicationFormProps) {
   const [formData, setFormData] = useState<FormData>({
     first_name: '',
     last_name: '',
@@ -94,6 +95,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
         // User does not exist, close modal and prefill email in form
         setFormData(prev => ({ ...prev, email: checkEmail.trim().toLowerCase() }))
         setShowEmailCheckModal(false)
+        if (onStepChange) onStepChange(2)
       }
     } catch (err: any) {
       setCheckError(err.message || 'Something went wrong while verifying email.')
@@ -397,76 +399,93 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
 
   return (
     <div className={inline ? "w-full" : "modal-overlay"} onClick={handleOverlayClick}>
-      <div className={inline ? "w-full max-w-2xl mx-auto p-4 md:p-6" : "bg-white border border-[#4f46e5]/10 w-full max-w-lg md:max-w-xl max-h-[90vh] overflow-y-auto p-4 md:p-6 relative rounded-2xl shadow-2xl"}>
+      <div className={inline ? "w-full" : "bg-zinc-950 border border-zinc-800 w-full max-w-lg md:max-w-xl max-h-[90vh] overflow-y-auto p-4 md:p-6 relative rounded-2xl shadow-[0_24px_60px_rgba(0,0,0,0.9)]"}>
 
         {/* Close Button */}
         {!inline && (
           <button
             onClick={onClose}
-            className="absolute top-4 md:top-6 right-4 md:right-6 text-slate-400 hover:text-[#4f46e5] transition-colors duration-300"
+            className="absolute top-4 md:top-6 right-4 md:right-6 text-zinc-500 hover:text-orange-400 transition-colors duration-300"
           >
             <X className="w-6 h-6" />
           </button>
         )}
         {showEmailCheckModal ? (
-          <div className="py-2">
-            <div className="text-center mb-6">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-teal-50 text-[#0f766e] mb-3">
-                <Mail className="w-6 h-6" />
+          <div className="py-1 space-y-5">
+            {/* Sleek Top Pill & Security Indicator */}
+            <div className="flex items-center justify-between gap-2">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-[10px] font-mono font-semibold uppercase tracking-widest text-orange-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
+                Access Verification
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-1">Verify Your Email</h2>
-              <p className="text-slate-400 text-sm font-light">
-                Please enter your email to check for any existing applications or letters.
+              <div className="flex items-center gap-1 text-zinc-500 text-[11px] font-mono">
+                <ShieldCheck className="w-3.5 h-3.5 text-orange-400/80" />
+                <span>SSL Encrypted</span>
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-xl font-bold text-white tracking-tight font-display mb-1">Check Your Access</h2>
+              <p className="text-zinc-400 text-xs font-normal leading-relaxed">
+                Enter registered email to retrieve your offer letter or start enrollment.
               </p>
             </div>
 
             {checkError && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6 flex items-center">
-                <AlertCircle className="w-5 h-5 text-red-400 mr-3 flex-shrink-0" />
-                <span className="text-red-400 text-sm">{checkError}</span>
+              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 flex items-center">
+                <AlertCircle className="w-4 h-4 text-red-400 mr-2.5 flex-shrink-0" />
+                <span className="text-red-400 text-xs">{checkError}</span>
               </div>
             )}
 
             {!existingUser ? (
               <form onSubmit={handleEmailCheck} className="space-y-4">
                 <div>
-                  <label className="block text-slate-700 text-sm font-medium mb-1.5">Email Address</label>
-                  <input
-                    type="email"
-                    value={checkEmail}
-                    onChange={(e) => setCheckEmail(e.target.value)}
-                    required
-                    className="input-field w-full"
-                    placeholder="professional@email.com"
-                  />
+                  <label className="block text-zinc-400 text-[11px] font-mono uppercase tracking-wider mb-1.5">Email Address</label>
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-500 group-focus-within:text-orange-400 transition-colors">
+                      <Mail className="w-3.5 h-3.5" />
+                    </div>
+                    <input
+                      type="email"
+                      value={checkEmail}
+                      onChange={(e) => setCheckEmail(e.target.value)}
+                      required
+                      className="w-full pl-9 pr-3.5 py-2.5 bg-zinc-900/60 border border-zinc-800/80 rounded-lg text-zinc-100 placeholder:text-zinc-500 text-xs focus:border-orange-500 focus:ring-2 focus:ring-orange-500/15 focus:bg-zinc-900 focus:outline-none transition-all"
+                      placeholder="professional@email.com"
+                    />
+                  </div>
                 </div>
 
                 <button
                   type="submit"
                   disabled={checkLoading}
-                  className="w-full btn-primary py-3 px-6 flex items-center justify-center rounded-xl space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full h-10 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-bold text-xs uppercase tracking-wider transition-all duration-200 shadow-[0_0_20px_rgba(255,102,0,0.3)] hover:shadow-[0_0_30px_rgba(255,102,0,0.5)] active:scale-[0.99] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {checkLoading ? (
                     <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      <span>Checking database...</span>
+                      <Loader2 className="w-4 h-4 animate-spin text-black" />
+                      <span>Verifying...</span>
                     </>
                   ) : (
-                    <span>Continue</span>
+                    <>
+                      <span>Continue to Portal</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-black" />
+                    </>
                   )}
                 </button>
               </form>
             ) : (
               <div className="space-y-5 text-center">
-                <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 text-left space-y-3">
-                  <div className="flex items-center space-x-2.5 text-emerald-800 font-semibold">
-                    <CheckCircle className="w-5 h-5 text-emerald-600" />
-                    <span>Application Found!</span>
+                <div className="bg-zinc-900 border border-orange-500/20 rounded-2xl p-5 text-left space-y-3">
+                  <div className="flex items-center space-x-2.5 text-orange-400 font-semibold">
+                    <CheckCircle className="w-5 h-5 text-orange-500" />
+                    <span>Document Located!</span>
                   </div>
-                  <div className="text-sm text-slate-600 space-y-1.5 pt-1">
+                  <div className="text-sm text-zinc-300 space-y-1.5 pt-1">
                     <p><strong>Name:</strong> {existingUser.first_name} {existingUser.last_name}</p>
                     <p><strong>Email:</strong> {existingUser.email}</p>
-                    <p><strong>Status:</strong> <span className="capitalize px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">{existingUser.status}</span></p>
+                    <p><strong>Status:</strong> <span className="capitalize ml-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-500/15 text-orange-400 border border-orange-500/20">{existingUser.status}</span></p>
                   </div>
                 </div>
 
@@ -478,9 +497,9 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                 )}
 
                 {downloadSuccess && (
-                  <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4 flex items-center text-left">
-                    <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
-                    <span className="text-green-400 text-sm">Offer letter downloaded successfully!</span>
+                  <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 flex items-center text-left">
+                    <CheckCircle className="w-5 h-5 text-emerald-400 mr-3 flex-shrink-0" />
+                    <span className="text-emerald-400 text-sm">Offer letter downloaded successfully!</span>
                   </div>
                 )}
 
@@ -488,19 +507,21 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                   <button
                     onClick={handleDownloadExistingOffer}
                     disabled={downloadingLetter}
-                    className="flex-1 btn-primary py-3 px-6 flex items-center justify-center rounded-xl space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 relative group overflow-hidden rounded-xl bg-gradient-to-r from-orange-500 via-orange-600 to-amber-600 p-[1px] font-semibold text-white transition-all duration-300 shadow-[0_4px_20px_rgba(255,102,0,0.25)] hover:shadow-[0_6px_30px_rgba(255,102,0,0.5)] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {downloadingLetter ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        <span>Generating PDF...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Download className="w-5 h-5" />
-                        <span>Download Offer Letter</span>
-                      </>
-                    )}
+                    <div className="flex items-center justify-center space-x-2 py-3 px-5 rounded-[11px] bg-zinc-950/20 group-hover:bg-transparent transition-all">
+                      {downloadingLetter ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin text-white" />
+                          <span className="font-semibold text-sm text-white">Generating PDF...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Download className="w-4 h-4 text-white" />
+                          <span className="font-semibold text-sm text-white">Download Document</span>
+                        </>
+                      )}
+                    </div>
                   </button>
 
                   <button
@@ -511,7 +532,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                       setDownloadError('')
                       setDownloadSuccess(false)
                     }}
-                    className="btn-secondary py-3 px-6 rounded-xl text-sm font-medium border border-slate-200 hover:bg-slate-50 transition-colors"
+                    className="px-5 py-3 rounded-xl text-sm font-semibold text-zinc-300 bg-zinc-900 border border-zinc-800 hover:border-orange-500/50 hover:text-white transition-all"
                   >
                     Check Another Email
                   </button>
@@ -521,16 +542,16 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
           </div>
         ) : (
           <>
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-slate-900 mb-1">Begin Your Journey</h2>
-              <p className="text-slate-400 text-sm font-light">Complete your professional enrollment below</p>
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-white mb-1.5">Enrollment Details</h2>
+              <p className="text-zinc-400 text-sm font-light">Fill in the fields below accurately for your offer letter.</p>
             </div>
 
             {/* Success Message */}
             {success && (
-              <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4 mb-6 flex items-center">
-                <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                <span className="text-green-400">Application submitted successfully! Our HR team will contact you shortly.</span>
+              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 mb-6 flex items-center">
+                <CheckCircle className="w-5 h-5 text-emerald-400 mr-3" />
+                <span className="text-emerald-400">Application submitted successfully! Our HR team will contact you shortly.</span>
               </div>
             )}
 
@@ -548,7 +569,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
               {/* Name Fields */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-700 text-sm font-medium mb-1.5">First Name</label>
+                  <label className="block text-zinc-300 text-sm font-medium mb-2">First Name</label>
                   <input
                     type="text"
                     name="first_name"
@@ -560,7 +581,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 text-sm font-medium mb-1.5">Last Name</label>
+                  <label className="block text-zinc-300 text-sm font-medium mb-2">Last Name</label>
                   <input
                     type="text"
                     name="last_name"
@@ -575,7 +596,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
 
               {/* Parent Name */}
               <div>
-                <label className="block text-slate-700 text-sm font-medium mb-1.5">{"Father's Name"}</label>
+                <label className="block text-zinc-300 text-sm font-medium mb-2">{"Father's Name"}</label>
                 <input
                   type="text"
                   name="father_name"
@@ -590,20 +611,20 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
               {/* Contact Information */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-700 text-sm font-medium mb-1.5">Email Address</label>
+                  <label className="block text-zinc-300 text-sm font-medium mb-2">Email Address</label>
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="input-field w-full bg-slate-50 cursor-not-allowed"
+                    className="input-field w-full opacity-60 cursor-not-allowed"
                     placeholder="professional@email.com"
                     disabled
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 text-sm font-medium mb-1.5">Phone Number</label>
+                  <label className="block text-zinc-300 text-sm font-medium mb-2">Phone Number</label>
                   <input
                     type="tel"
                     name="phone"
@@ -618,7 +639,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
 
               {/* College / University */}
               <div>
-                <label className="block text-slate-700 text-sm font-medium mb-1.5">College / University</label>
+                <label className="block text-zinc-300 text-sm font-medium mb-2">College / University</label>
                 <input
                   type="text"
                   name="college_name"
@@ -632,7 +653,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
 
               {/* Address */}
               <div>
-                <label className="block text-slate-700 text-sm font-medium mb-1.5">Address</label>
+                <label className="block text-zinc-300 text-sm font-medium mb-2">Address</label>
                 <textarea
                   name="address"
                   value={formData.address}
@@ -647,7 +668,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
               {/* Position and Duration */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-700 text-sm font-medium mb-1.5">Position</label>
+                  <label className="block text-zinc-300 text-sm font-medium mb-2">Position</label>
                   <select
                     name="role_id"
                     value={formData.role_id}
@@ -664,7 +685,7 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-700 text-sm font-medium mb-1.5">Duration</label>
+                  <label className="block text-zinc-300 text-sm font-medium mb-2">Duration</label>
                   <select
                     name="tenure_id"
                     value={formData.tenure_id}
@@ -690,14 +711,14 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
 
               {/* Document Uploads */}
               <div className="space-y-4" ref={documentsRef}>
-                <h3 className="text-lg font-semibold text-slate-800 border-b border-teal-900/10 pb-2">
+                <h3 className="text-base font-semibold text-white">
                   Required Documents
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-slate-700 text-sm font-medium mb-1.5">
-                      Aadhar Card (Front) <span className="text-red-400">*</span>
+                    <label className="block text-zinc-300 text-sm font-medium mb-2">
+                      Aadhar Card (Front) <span className="text-orange-400">*</span>
                     </label>
                     <input
                       type="file"
@@ -705,14 +726,14 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                       onChange={handleFileChange}
                       accept="image/*"
                       required
-                      className={`w-full px-3 py-2 bg-white border rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#0f766e] file:text-white hover:file:bg-[#115e59] transition-colors ${missingFiles.includes('aadhar_front') ? 'border-red-400 ring-2 ring-red-400/30' : 'border-teal-900/10'}`}
+                      className={`w-full px-3 py-2 bg-zinc-950 border rounded-lg text-zinc-400 text-sm file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-orange-600 file:text-white file:text-xs file:font-medium hover:file:bg-orange-500 transition-colors cursor-pointer ${missingFiles.includes('aadhar_front') ? 'border-red-500/50 ring-2 ring-red-500/20' : 'border-zinc-800'}`}
                     />
-                    <p className="text-xs text-slate-400 mt-1">Upload a clear image (JPG/PNG)</p>
+                    <p className="text-xs text-zinc-600 mt-1">Upload a clear image (JPG/PNG)</p>
                   </div>
 
                   <div>
-                    <label className="block text-slate-700 text-sm font-medium mb-1.5">
-                      Aadhar Card (Back) <span className="text-red-400">*</span>
+                    <label className="block text-zinc-300 text-sm font-medium mb-2">
+                      Aadhar Card (Back) <span className="text-orange-400">*</span>
                     </label>
                     <input
                       type="file"
@@ -720,14 +741,14 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                       onChange={handleFileChange}
                       accept="image/*"
                       required
-                      className={`w-full px-3 py-2 bg-white border rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#0f766e] file:text-white hover:file:bg-[#115e59] transition-colors ${missingFiles.includes('aadhar_back') ? 'border-red-400 ring-2 ring-red-400/30' : 'border-teal-900/10'}`}
+                      className={`w-full px-3 py-2 bg-zinc-950 border rounded-lg text-zinc-400 text-sm file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-orange-600 file:text-white file:text-xs file:font-medium hover:file:bg-orange-500 transition-colors cursor-pointer ${missingFiles.includes('aadhar_back') ? 'border-red-500/50 ring-2 ring-red-500/20' : 'border-zinc-800'}`}
                     />
-                    <p className="text-xs text-slate-400 mt-1">Upload a clear image (JPG/PNG)</p>
+                    <p className="text-xs text-zinc-600 mt-1">Upload a clear image (JPG/PNG)</p>
                   </div>
 
                   <div>
-                    <label className="block text-slate-700 text-sm font-medium mb-1.5">
-                      Candidate Photo <span className="text-red-400">*</span>
+                    <label className="block text-zinc-300 text-sm font-medium mb-2">
+                      Candidate Photo <span className="text-orange-400">*</span>
                     </label>
                     <input
                       type="file"
@@ -735,14 +756,14 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                       onChange={handleFileChange}
                       accept="image/*"
                       required
-                      className={`w-full px-3 py-2 bg-white border rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#0f766e] file:text-white hover:file:bg-[#115e59] transition-colors ${missingFiles.includes('photo') ? 'border-red-400 ring-2 ring-red-400/30' : 'border-teal-900/10'}`}
+                      className={`w-full px-3 py-2 bg-zinc-950 border rounded-lg text-zinc-400 text-sm file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-orange-600 file:text-white file:text-xs file:font-medium hover:file:bg-orange-500 transition-colors cursor-pointer ${missingFiles.includes('photo') ? 'border-red-500/50 ring-2 ring-red-500/20' : 'border-zinc-800'}`}
                     />
-                    <p className="text-xs text-slate-400 mt-1">Passport size photo (JPG/PNG)</p>
+                    <p className="text-xs text-zinc-600 mt-1">Passport size photo (JPG/PNG)</p>
                   </div>
 
                   <div>
-                    <label className="block text-slate-700 text-sm font-medium mb-1.5">
-                      College ID Card <span className="text-red-400">*</span>
+                    <label className="block text-zinc-300 text-sm font-medium mb-2">
+                      College ID Card <span className="text-orange-400">*</span>
                     </label>
                     <input
                       type="file"
@@ -750,14 +771,14 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                       onChange={handleFileChange}
                       accept="image/*"
                       required
-                      className={`w-full px-3 py-2 bg-white border rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#0f766e] file:text-white hover:file:bg-[#115e59] transition-colors ${missingFiles.includes('college_id') ? 'border-red-400 ring-2 ring-red-400/30' : 'border-teal-900/10'}`}
+                      className={`w-full px-3 py-2 bg-zinc-950 border rounded-lg text-zinc-400 text-sm file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-orange-600 file:text-white file:text-xs file:font-medium hover:file:bg-orange-500 transition-colors cursor-pointer ${missingFiles.includes('college_id') ? 'border-red-500/50 ring-2 ring-red-500/20' : 'border-zinc-800'}`}
                     />
-                    <p className="text-xs text-slate-400 mt-1">Student ID card image (JPG/PNG)</p>
+                    <p className="text-xs text-zinc-600 mt-1">Student ID card image (JPG/PNG)</p>
                   </div>
 
                   <div>
-                    <label className="block text-slate-700 text-sm font-medium mb-1.5">
-                      12th Marksheet <span className="text-red-400">*</span>
+                    <label className="block text-zinc-300 text-sm font-medium mb-2">
+                      12th Marksheet <span className="text-orange-400">*</span>
                     </label>
                     <input
                       type="file"
@@ -765,9 +786,9 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                       onChange={handleFileChange}
                       accept="image/*"
                       required
-                      className={`w-full px-3 py-2 bg-white border rounded-lg text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#0f766e] file:text-white hover:file:bg-[#115e59] transition-colors ${missingFiles.includes('marksheet_12th') ? 'border-red-400 ring-2 ring-red-400/30' : 'border-teal-900/10'}`}
+                      className={`w-full px-3 py-2 bg-zinc-950 border rounded-lg text-zinc-400 text-sm file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-orange-600 file:text-white file:text-xs file:font-medium hover:file:bg-orange-500 transition-colors cursor-pointer ${missingFiles.includes('marksheet_12th') ? 'border-red-500/50 ring-2 ring-red-500/20' : 'border-zinc-800'}`}
                     />
-                    <p className="text-xs text-slate-400 mt-1">Class 12 certificate image (JPG/PNG)</p>
+                    <p className="text-xs text-zinc-600 mt-1">Class 12 certificate image (JPG/PNG)</p>
                   </div>
                 </div>
               </div>
@@ -777,26 +798,29 @@ export default function ApplicationForm({ roles, tenures, onClose, inline }: App
                 <button
                   type="submit"
                   disabled={loading || success}
-                  className={`${loading ? 'btn-loading-shimmer' : 'btn-primary disabled:opacity-50'} w-full sm:w-auto sm:px-8 text-base py-3 flex items-center justify-center rounded-full space-x-2 disabled:cursor-not-allowed`}
+                  className="w-full relative group overflow-hidden rounded-xl bg-gradient-to-r from-orange-500 via-orange-600 to-amber-600 p-[1px] font-semibold text-white transition-all duration-300 shadow-[0_4px_20px_rgba(255,102,0,0.25)] hover:shadow-[0_6px_30px_rgba(255,102,0,0.5)] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
                   aria-live="polite"
                   aria-busy={loading}
                 >
-                  {loading ? (
-                    <>
-                      <div className="loading-spinner" aria-hidden="true"></div>
-                      <span className="font-medium tracking-wide">Fetching Info...</span>
-                    </>
-                  ) : success ? (
-                    <>
-                      <CheckCircle className="w-5 h-5" />
-                      <span>Submitted Successfully</span>
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-5 h-5" />
-                      <span className="font-semibold">Submit Details</span>
-                    </>
-                  )}
+                  <div className="flex items-center justify-center space-x-2 py-3.5 px-6 rounded-[11px] bg-zinc-950/20 group-hover:bg-transparent transition-all">
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin text-white" aria-hidden="true" />
+                        <span className="font-semibold tracking-wide text-white">Generating Offer Letter...</span>
+                      </>
+                    ) : success ? (
+                      <>
+                        <CheckCircle className="w-5 h-5 text-white" />
+                        <span className="font-semibold text-white">Letter Generated!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 text-white group-hover:scale-110 transition-transform" />
+                        <span className="font-semibold tracking-wide text-white">Generate My Letter</span>
+                        <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
+                      </>
+                    )}
+                  </div>
                 </button>
               </div>
             </form>

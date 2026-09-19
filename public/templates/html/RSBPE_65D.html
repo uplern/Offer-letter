@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #1a1a1a;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .page {
+            position: relative;
+            width: 210mm;
+            height: 297mm;
+            padding: 20mm 20mm 45mm 20mm;
+            box-sizing: border-box;
+            page-break-after: always;
+            background-image: url('{{BACKGROUND_IMAGE}}');
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .logo {
+            width: 180px;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            margin-top: 10px;
+        }
+
+        .title {
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin-bottom: 12px;
+        }
+
+        ul {
+            margin: 12px 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            color: #000;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        .bold {
+            font-weight: 700;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 55mm;
+            left: 20mm;
+            right: 20mm;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .seal {
+            width: 140px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Page 1 -->
+    <div class="page">
+        <div class="header">
+            <img src="{{LOGO_IMAGE}}" class="logo" />
+        </div>
+
+        <div class="content">
+            <p class="bold">UPLERN</p>
+            <p>Date: {{Date}}</p>
+            <p>Subject: Offer Letter for Recruitment Specialist and Business Partnership Executive</p>
+            <p>Dear <span class="bold">{{Name}}</span>,</p>
+
+            <p>We are delighted to offer you the position of <span class="bold">Recruitment Specialist and Business Partnership Executive</span> at Uplern for a tenure of <span class="bold">65 Days</span>.</p>
+
+            <p>This opportunity offers intensive practical exposure in talent acquisition, recruitment management, and strategic business partnership development by working alongside a dynamic team.</p>
+
+            <div class="section-title">Program Overview:</div>
+            <ul>
+                <li><span class="bold">Position:</span> Recruitment Specialist and Business Partnership Executive</li>
+                <li><span class="bold">Duration:</span> 65 Days</li>
+                <li><span class="bold">Mode:</span> Remote</li>
+                <li><span class="bold">Working Hours:</span> Flexible (Minimum 3-4 hours per day)</li>
+                <li><span class="bold">Team Communication:</span> Google Meet, WhatsApp, Email</li>
+            </ul>
+
+            <div class="section-title">Key Roles and Responsibilities:</div>
+            <p>As part of your tenure, your responsibilities will include but are not limited to:</p>
+            <ul>
+                <li>Managing end-to-end recruitment activities including candidate sourcing, resume screening, and scheduling interviews.</li>
+                <li>Identifying, reaching out to, and fostering potential business partnerships and strategic alliances.</li>
+                <li>Coordinating candidate onboarding workflows and maintaining documentation trackers.</li>
+                <li>Assisting in strategic outreach campaigns to drive organizational growth.</li>
+                <li>Updating internal databases, CRM systems, and preparing weekly performance tracking reports.</li>
+                <li>Communicating effectively with internal and external stakeholders.</li>
+                <li>Leading initiatives to optimize team productivity and execution.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Page 2 -->
+    <div class="page">
+        <div class="content">
+            <div class="section-title">Expectations & Professional Standards:</div>
+            <ul>
+                <li>Maintain strict confidentiality and professionalism across all company operations.</li>
+                <li>Be proactive, highly responsive, and consistent with daily and weekly deliverables.</li>
+                <li>Actively participate in scheduled team meetings, review calls, and brainstorming sessions.</li>
+                <li>Adhere strictly to project timelines and demonstrate full ownership of assigned targets.</li>
+            </ul>
+
+            <div class="section-title">Learning & Skill Development Outcomes:</div>
+            <p>During your 65-day tenure, you will gain practical expertise in:</p>
+            <ul>
+                <li>End-to-end talent acquisition and candidate evaluation techniques.</li>
+                <li>Corporate communication and strategic business partnership development.</li>
+                <li>Database management, workflow tracking, and CRM operations.</li>
+                <li>Team leadership, task allocation, and operational management.</li>
+                <li>Workplace discipline, professional ethics, and executive decision-making.</li>
+            </ul>
+
+            <div class="section-title">Performance Evaluation:</div>
+            <p>Your performance will be monitored on a weekly basis based on:</p>
+            <ul>
+                <li>Consistency and quality of task completion.</li>
+                <li>Strategy implementation and problem-solving initiative.</li>
+                <li>Punctuality, active participation, and communication.</li>
+                <li>Adherence to professional code of conduct and organizational policies.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Page 3 -->
+    <div class="page">
+        <div class="content">
+            <div class="section-title">Perks and Benefits:</div>
+            <ul>
+                <li>Certificate of Completion awarded upon successful completion of the 65-day program.</li>
+                <li>Letter of Recommendation (LOR) based on exceptional performance and professionalism.</li>
+                <li>Hands-on practical experience with live projects and executive leadership exposure.</li>
+                <li>Mentorship and continuous guidance from experienced industry professionals.</li>
+                <li>Recognition of top performers on Uplern's official professional channels.</li>
+                <li>Endorsement of skills on professional networks such as LinkedIn.</li>
+            </ul>
+
+            <div class="section-title">Terms & Conditions:</div>
+            <ul>
+                <li>You must maintain professional conduct and respect all internal timelines and guidelines.</li>
+                <li>All work products, strategies, data, and content generated during your tenure remain the exclusive intellectual property of Uplern.</li>
+                <li>Any unauthorized sharing of company assets, credentials, databases, or internal strategies is strictly prohibited.</li>
+                <li>Any voluntary discontinuation must be formally communicated at least 7 days in advance.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Page 4 -->
+    <div class="page">
+        <div class="content">
+            <div class="section-title">Confidentiality & Non-Disclosure Agreement (NDA):</div>
+            <p>You agree to maintain absolute confidentiality regarding all proprietary information, client lists, business strategies, and internal processes during and after your tenure. Any breach of confidentiality will result in immediate termination and potential legal action.</p>
+
+            <div class="section-title">Non-Compete Agreement:</div>
+            <p>You shall not directly provide similar services or engage with direct competitors of Uplern for a period of three months following your tenure, ensuring protection of proprietary practices exposed during the program.</p>
+
+            <div class="section-title">Withdrawal or Termination:</div>
+            <ul>
+                <li>You may withdraw by providing a formal written notice of 7 days.</li>
+                <li>Uplern reserves the right to terminate participation for non-performance, breach of policy, or inactivity.</li>
+                <li>In cases of unauthorized early withdrawal or policy violation, certificates and completion benefits may be withheld.</li>
+            </ul>
+
+            <p style="margin-top: 35px;">Warm regards,</p>
+            <p class="bold">Team Uplern</p>
+            <p>Email: info@uplern.uk / hq@uplern.uk</p>
+
+            <div class="footer">
+                <div style="text-align: left;">
+                    <p class="bold">Candidate Signature:</p>
+                </div>
+                <div style="text-align: center;">
+                    <img src="{{SEAL_IMAGE}}" class="seal" />
+                    <p class="bold" style="margin: -15px 0 2px 0; font-size: 16px;">Aarav Jain</p>
+                    <p style="margin: 0; font-size: 14px;">Authorized Signatory</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

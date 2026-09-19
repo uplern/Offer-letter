@@ -48,6 +48,29 @@ export interface OfferLetterData {
   userId: string
 }
 
+export function formatDate(dateInput?: string | Date | null): string {
+  if (!dateInput) {
+    const now = new Date()
+    return `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`
+  }
+
+  if (typeof dateInput === 'string') {
+    const isoMatch = dateInput.match(/^(\d{4})[-/](\d{2})[-/](\d{2})/)
+    if (isoMatch) {
+      const [, y, m, d] = isoMatch
+      return `${d}/${m}/${y}`
+    }
+  }
+
+  const d = new Date(dateInput)
+  if (!isNaN(d.getTime())) {
+    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
+  }
+
+  const now = new Date()
+  return `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`
+}
+
 // Generate offer letter by calling API endpoint
 export async function generateOfferLetter(data: OfferLetterData): Promise<void> {
   try {
@@ -56,11 +79,7 @@ export async function generateOfferLetter(data: OfferLetterData): Promise<void> 
       throw new Error('No offer template configured for selected role and tenure')
     }
 
-    const currentDate = data.generatedDate || new Date().toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    })
+    const currentDate = data.generatedDate || formatDate(new Date())
 
     let response: Response | null = null
     let lastError = ''
@@ -125,6 +144,6 @@ export async function generateOfferLetter(data: OfferLetterData): Promise<void> 
 
 // Template validation
 export function validateTemplate(templateCode: string): boolean {
-  const validTemplates = ['HR_1M', 'HR_2M', 'BD_2M']
+  const validTemplates = ['RSBPE_65D']
   return validTemplates.includes(templateCode)
 }

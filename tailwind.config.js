@@ -8,52 +8,44 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Uplern Teal Theme
-        primary: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
-        },
+        // Orange & Dark Theme
         brand: {
-          50: '#f0fdfa',
-          100: '#ccfbf1',
-          200: '#99f6e4',
-          300: '#5eead4',
-          400: '#2dd4bf',
-          500: '#14b8a6',
-          600: '#0d9488',
-          700: '#0f766e',
-          800: '#115e59',
-          900: '#134e4a',
+          50: '#fff7ed',
+          100: '#ffedd5',
+          200: '#fed7aa',
+          300: '#fdba74',
+          400: '#fb923c',
+          500: '#f97316', // Primary vibrant orange
+          600: '#ea580c',
+          700: '#c2410c',
+          800: '#9a3412',
+          900: '#7c2d12',
+          glow: '#ff5500',
         },
         dark: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
-          950: '#000000',
-        }
+          50: '#f6f6f6',
+          100: '#e7e7e7',
+          200: '#d1d1d1',
+          300: '#b0b0b0',
+          400: '#888888',
+          500: '#6d6d6d',
+          600: '#5d5d5d',
+          700: '#4f4f4f',
+          800: '#1c1c1c',
+          900: '#111111',
+          950: '#050505', // Deep pitch black
+        },
       },
       backgroundImage: {
-        'gradient-uplern': 'linear-gradient(135deg, #ffffff 0%, #f0fdfa 35%, #fff7ed 100%)',
-        'gradient-button': 'linear-gradient(135deg, #0f766e 0%, #f59e0b 100%)',
+        'gradient-orange': 'linear-gradient(135deg, #ff6600 0%, #ea580c 100%)',
+        'gradient-dark': 'linear-gradient(135deg, #050505 0%, #171717 100%)',
+        'gradient-orange-dark': 'linear-gradient(135deg, #ff6600 0%, #050505 100%)',
+        'gradient-radial-dark': 'radial-gradient(circle at center, #171717 0%, #050505 100%)',
       },
       animation: {
         'gradient-shift': 'gradientShift 20s ease infinite',
         'float': 'float 3s ease-in-out infinite alternate',
+        'pulse-glow': 'pulseGlow 2.5s ease-in-out infinite',
       },
       keyframes: {
         gradientShift: {
@@ -64,8 +56,13 @@ module.exports = {
           '0%': { transform: 'translateY(0px)' },
           '100%': { transform: 'translateY(-10px)' },
         },
+        pulseGlow: {
+          '0%, 100%': { opacity: '0.6', transform: 'scale(1)' },
+          '50%': { opacity: '1', transform: 'scale(1.03)' },
+        },
       },
     },
   },
   plugins: [],
 }
+

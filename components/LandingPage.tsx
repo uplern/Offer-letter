@@ -2,9 +2,21 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { supabase, Role, Tenure } from '@/lib/supabase'
-import { GraduationCap, Briefcase, Clock, Award, Users, TrendingUp, Shield, Globe, ChevronRight } from 'lucide-react'
+import { motion } from 'framer-motion'
 import Image from 'next/image'
+import { supabase, Role, Tenure } from '@/lib/supabase'
+import {
+  GraduationCap,
+  Briefcase,
+  Clock,
+  Award,
+  Users,
+  TrendingUp,
+  Shield,
+  ChevronRight,
+  Zap,
+  Flame
+} from 'lucide-react'
 
 export default function LandingPage() {
   const router = useRouter()
@@ -27,7 +39,6 @@ export default function LandingPage() {
       if (tenuresResponse.data) setTenures(tenuresResponse.data)
     } catch (error) {
       console.error('Error fetching data:', error)
-      // Set default data if Supabase fails
       setRoles([
         { id: '1', name: 'Human Resources', code: 'HR', created_at: new Date().toISOString() },
         { id: '2', name: 'Business Development', code: 'BD', created_at: new Date().toISOString() }
@@ -41,205 +52,279 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#f8fafc] text-slate-900 relative overflow-hidden font-sans selection:bg-teal-500/30">
-      
-      {/* Subtle Professional Background Elements */}
-      <div className="absolute top-0 right-0 w-full h-[600px] bg-gradient-to-b from-teal-50/50 to-transparent pointer-events-none z-0"></div>
-      
+    <div className="min-h-screen w-full bg-[#050505] text-white relative overflow-hidden font-sans selection:bg-orange-500/30 selection:text-orange-200">
+
+      {/* Required SVG Color Matrix Filter for Uiverse Glow Button Effects */}
+      <svg style={{ position: 'absolute', width: 0, height: 0, pointerEvents: 'none' }}>
+        <filter width="3000%" x="-1000%" height="3000%" y="-1000%" id="unopaq">
+          <feColorMatrix
+            values="1 0 0 0 0 
+                    0 1 0 0 0 
+                    0 0 1 0 0 
+                    0 0 0 3 0"
+          />
+        </filter>
+      </svg>
+
+      {/* Background Radial Glow Mesh */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-[600px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-orange-600/20 via-orange-950/5 to-transparent pointer-events-none z-0" />
+      <div className="absolute top-[20%] right-0 w-[400px] h-[400px] bg-orange-600/10 rounded-full blur-[150px] pointer-events-none z-0" />
+      <div className="absolute top-[30%] left-0 w-[400px] h-[400px] bg-orange-500/10 rounded-full blur-[150px] pointer-events-none z-0" />
+
       <div className="relative z-10 flex flex-col min-h-screen">
-        
-        {/* Navbar */}
-        <nav className="w-full border-b border-slate-200/60 bg-white/70 py-4 px-4 sm:px-6 md:px-8 lg:px-16 backdrop-blur-xl sticky top-0 z-50 transition-all">
+
+        {/* Navigation Header - Seamlessly Merged into Hero Canvas */}
+        <motion.nav
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="w-full bg-transparent py-5 px-4 sm:px-6 md:px-8 lg:px-16 absolute top-0 left-0 z-50 transition-all"
+        >
           <div className="max-w-7xl mx-auto flex items-center justify-between">
-            {/* Logo */}
-            <div className="relative w-32 sm:w-40 h-10 lg:h-12 min-w-0">
+            {/* Real Uplern Logo */}
+            <div className="relative w-36 sm:w-44 h-9 sm:h-11 min-w-0 flex items-center">
               <Image
                 src="/logo.png"
                 alt="Uplern Logo"
                 fill
-                className="object-contain"
+                className="object-contain filter brightness-110"
                 priority
-                sizes="(max-width: 768px) 144px, 160px"
+                sizes="(max-width: 768px) 144px, 176px"
               />
             </div>
-
-            {/* Admin Login Icon */}
-            <div className="flex items-center">
-              <button
-                onClick={() => router.push('/admin/login')}
-                className="group flex items-center space-x-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-600 shadow-sm transition-all duration-300 hover:border-teal-500 hover:text-teal-700"
-                title="Admin Login"
-              >
-                <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400 group-hover:text-teal-600 transition-colors" />
-                <span className="text-sm font-medium hidden sm:inline-block">Admin Access</span>
-              </button>
-            </div>
           </div>
-        </nav>
+        </motion.nav>
 
-        {/* Hero Section */}
-        <section className="px-4 flex-grow flex items-center py-20 lg:py-28 relative">
-          <div className="max-w-7xl mx-auto w-full">
-            <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-16 items-center">
-              
-              {/* Left Side - Content */}
-              <div className="space-y-8 min-w-0 z-10 text-center lg:text-left">
-                <div className="space-y-6 break-words">
-                  <div className="inline-flex w-fit rounded-full border border-teal-200 bg-teal-50 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-teal-700 shadow-sm mx-auto lg:mx-0">
-                    Professional Acceleration
-                  </div>
-                  
-                  <h1 className="text-5xl sm:text-6xl lg:text-[4.5rem] font-extrabold text-slate-900 leading-[1.15] tracking-tight">
-                    Master the <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-emerald-500">Future</span> of Work
-                  </h1>
 
-                  <p className="text-lg sm:text-xl text-slate-600 font-normal leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                    Step into an immersive professional ecosystem. Build highly-valued skills, ship real deliverables, and unlock your career potential through our premier accelerator programs.
-                  </p>
-                </div>
+        {/* Hero Section - Pure 100% Opacity Background Image */}
+        <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden px-4 pt-28 pb-16">
+          {/* 100% Pure Untouched Background Image */}
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="/bgimg1.jpg"
+              alt="Hero Background"
+              fill
+              className="object-cover object-center opacity-100"
+              priority
+              sizes="100vw"
+            />
+          </div>
 
-                <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start pt-4">
-                  <button
-                    onClick={() => router.push('/apply')}
-                    className="group relative flex items-center justify-center rounded-xl bg-[#0f766e] px-8 py-4 font-semibold text-white shadow-[0_8px_20px_rgba(15,118,110,0.25)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#115e59] hover:shadow-[0_12px_25px_rgba(15,118,110,0.3)] overflow-hidden w-full sm:w-auto"
-                  >
-                    <span className="relative z-10 flex items-center text-lg">
-                      Generate Offer Letter
-                      <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+          <div className="relative z-10 max-w-5xl mx-auto w-full text-center">
+
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="space-y-8"
+            >
+              {/* Large Grand Title */}
+              <h1 className="font-space-grotesk text-5xl sm:text-7xl lg:text-[5.5rem] font-bold text-white leading-[1.05] tracking-tight max-w-5xl mx-auto"
+                style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700 }}>
+                Transform Your Career with <span className="text-[#ff6600]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Elite Industry Sprints</span>
+              </h1>
+
+              {/* Sleek Subtitle */}
+              <p className="font-dm-sans text-xl sm:text-2xl text-white/90 font-medium leading-relaxed max-w-3xl mx-auto tracking-wide"
+                style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}>
+                Step into an immersive professional ecosystem. Master industry-demanded skills, execute real projects, and secure official credentials with top mentors.
+              </p>
+
+
+
+
+
+
+              {/* Hero Dexter Corner-Drawer Orange Glow CTA */}
+              <div className="flex justify-center items-center pt-8 pb-4">
+                <div
+                  className="dexter-btn-container"
+                  onClick={() => router.push('/apply')}
+                >
+                  <div className="btn-drawer transition-top">Official Document</div>
+                  <div className="btn-drawer transition-bottom">expire in 4 Hrs</div>
+
+                  <button className="btn">
+                    <span className="btn-text flex items-center">
+                      Get Offer Letter
+                      <ChevronRight className="w-5 h-5 ml-1.5 text-white" />
                     </span>
                   </button>
+
+                  <svg className="btn-corner" xmlns="http://www.w3.org/2000/svg" viewBox="-1 1 32 32">
+                    <path d="M32,32C14.355,32,0,17.645,0,0h.985c0,17.102,13.913,31.015,31.015,31.015v.985Z" />
+                  </svg>
+                  <svg className="btn-corner" xmlns="http://www.w3.org/2000/svg" viewBox="-1 1 32 32">
+                    <path d="M32,32C14.355,32,0,17.645,0,0h.985c0,17.102,13.913,31.015,31.015,31.015v.985Z" />
+                  </svg>
+                  <svg className="btn-corner" xmlns="http://www.w3.org/2000/svg" viewBox="-1 1 32 32">
+                    <path d="M32,32C14.355,32,0,17.645,0,0h.985c0,17.102,13.913,31.015,31.015,31.015v.985Z" />
+                  </svg>
+                  <svg className="btn-corner" xmlns="http://www.w3.org/2000/svg" viewBox="-1 1 32 32">
+                    <path d="M32,32C14.355,32,0,17.645,0,0h.985c0,17.102,13.913,31.015,31.015,31.015v.985Z" />
+                  </svg>
                 </div>
               </div>
+            </motion.div>
 
-              {/* Right Side - Professional Image Board */}
-              <div className="relative w-full h-full min-h-[450px] flex items-center justify-center min-w-0 mt-10 lg:mt-0">
-                <div className="absolute inset-0 bg-gradient-to-br from-teal-100/50 to-transparent rounded-[2.5rem] transform rotate-3 scale-105 -z-10"></div>
-                <div className="relative w-full h-full rounded-[2rem] overflow-hidden border border-slate-200/60 shadow-[0_20px_60px_rgba(15,23,42,0.08)] bg-white p-2">
-                  <div className="absolute inset-0 bg-slate-50/50"></div>
-                  <Image
-                    src="/lp1.svg"
-                    alt="Professional workspace - Join Uplern career development"
-                    fill
-                    className="object-contain p-8 animate-slow-pan"
-                    priority
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 50vw"
-                  />
-                </div>
-              </div>
-
-            </div>
           </div>
         </section>
+
 
         {/* Corporate Metrics Section */}
-        <section className="py-16 px-4 relative z-10 bg-white border-y border-slate-200/60">
-          <div className="max-w-7xl mx-auto">
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-slate-200">
-                <div className="flex flex-col items-center p-4">
-                  <Users className="w-8 h-8 text-teal-600 mb-3" />
-                  <div className="text-3xl font-extrabold text-slate-900 mb-1">500+</div>
-                  <div className="text-slate-500 font-medium">Global Operators Trained</div>
+        <motion.section
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="py-14 px-4 relative z-10 bg-zinc-950 border-y border-zinc-800/80"
+        >
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center divide-y md:divide-y-0 md:divide-x divide-zinc-800/80">
+              <div className="flex flex-col items-center p-3">
+                <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center mb-3 text-orange-500">
+                  <Users className="w-5 h-5" />
                 </div>
-                <div className="flex flex-col items-center p-4">
-                  <TrendingUp className="w-8 h-8 text-teal-600 mb-3" />
-                  <div className="text-3xl font-extrabold text-slate-900 mb-1">95%</div>
-                  <div className="text-slate-500 font-medium">Placement Success Rate</div>
+                <div className="text-2xl sm:text-3xl font-light text-white mb-0.5 orange-glow-text">500+</div>
+                <div className="text-zinc-400 font-light text-xs sm:text-sm tracking-wide">Global Operators Trained</div>
+              </div>
+              <div className="flex flex-col items-center p-3">
+                <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center mb-3 text-orange-500">
+                  <TrendingUp className="w-5 h-5" />
                 </div>
-                <div className="flex flex-col items-center p-4">
-                  <Briefcase className="w-8 h-8 text-teal-600 mb-3" />
-                  <div className="text-3xl font-extrabold text-slate-900 mb-1">50+</div>
-                  <div className="text-slate-500 font-medium">Hiring Partners</div>
+                <div className="text-2xl sm:text-3xl font-light text-white mb-0.5 orange-glow-text">95%</div>
+                <div className="text-zinc-400 font-light text-xs sm:text-sm tracking-wide">Placement Success Rate</div>
+              </div>
+              <div className="flex flex-col items-center p-3">
+                <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center mb-3 text-orange-500">
+                  <Briefcase className="w-5 h-5" />
                 </div>
-             </div>
+                <div className="text-2xl sm:text-3xl font-light text-white mb-0.5 orange-glow-text">50+</div>
+                <div className="text-zinc-400 font-light text-xs sm:text-sm tracking-wide">Enterprise Hiring Partners</div>
+              </div>
+            </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Strategic Tracks Section */}
-        <section className="py-24 px-4 relative z-10 bg-[#f8fafc]">
+        <section id="tracks-section" className="py-20 px-4 relative z-10 bg-[#050505]">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16 break-words">
-              <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">
-                Strategic Tracks
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-14 break-words"
+            >
+              <div className="inline-flex items-center space-x-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-3.5 py-0.5 text-[11px] font-light uppercase tracking-widest text-orange-400 mb-3">
+                <Zap className="w-3 h-3 text-orange-500" />
+                <span>Specialized Paths</span>
+              </div>
+              <h2 className="text-2xl md:text-4xl font-light text-white mb-3 tracking-tight">
+                Strategic Career Tracks
               </h2>
-              <p className="text-lg text-slate-500 font-normal max-w-2xl mx-auto">
-                Select a specialized path engineered to accelerate your professional trajectory and industry authority.
+              <p className="text-xs sm:text-sm text-zinc-400 font-light max-w-xl mx-auto tracking-wide">
+                Select a high-impact trajectory engineered to accelerate your authority and hands-on expertise.
               </p>
-            </div>
+            </motion.div>
 
             {loading ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="w-10 h-10 border-4 border-slate-200 border-t-teal-600 rounded-full animate-spin"></div>
+              <div className="flex items-center justify-center py-16">
+                <div className="w-8 h-8 border-2 border-zinc-800 border-t-orange-500 rounded-full animate-spin" />
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
                 {roles.map((role, index) => (
-                  <div
+                  <motion.div
                     key={role.id}
-                    className="glass-panel-light p-8 md:p-10 flex flex-col items-start relative overflow-hidden group cursor-default"
+                    initial={{ opacity: 0, y: 25 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.12 }}
+                    whileHover={{ y: -4 }}
+                    className="glass-panel-light p-6 md:p-8 flex flex-col items-start relative overflow-hidden group cursor-default"
                   >
-                    
-                    <div className="w-14 h-14 bg-teal-50 border border-teal-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-teal-600 transition-all duration-300">
-                      {index === 0 ? <Users className="w-6 h-6 text-teal-600 group-hover:text-white transition-colors" /> : <TrendingUp className="w-6 h-6 text-teal-600 group-hover:text-white transition-colors" />}
+                    <div className="w-12 h-12 bg-zinc-900 border border-orange-500/30 rounded-xl flex items-center justify-center mb-5 group-hover:scale-105 group-hover:bg-orange-600 group-hover:border-orange-500 transition-all duration-300">
+                      {index === 0 ? (
+                        <Users className="w-5 h-5 text-orange-400 group-hover:text-white transition-colors" />
+                      ) : (
+                        <TrendingUp className="w-5 h-5 text-orange-400 group-hover:text-white transition-colors" />
+                      )}
                     </div>
-                    
-                    <h3 className="text-2xl font-bold text-slate-900 mb-1 group-hover:text-teal-700 transition-colors">
+
+                    <h3 className="text-xl font-normal text-white mb-1 group-hover:text-orange-400 transition-colors">
                       {role.name}
                     </h3>
-                    <p className="text-slate-400 text-xs font-bold tracking-widest mb-8 uppercase">Track Code: {role.code}</p>
+                    <p className="text-orange-500/80 text-[10px] font-light tracking-widest mb-6 uppercase">Track Code: {role.code}</p>
 
-                    <div className="space-y-4 mb-10 w-full text-left flex-grow">
-                      <div className="flex items-center text-slate-600">
-                        <div className="w-6 h-6 flex items-center justify-center mr-3">
-                          <Clock className="w-5 h-5 text-slate-400" />
-                        </div>
-                        <span className="text-sm font-medium">Accelerated 2-Month Sprint</span>
+                    <div className="space-y-3 mb-8 w-full text-left flex-grow font-light">
+                      <div className="flex items-center text-zinc-300 text-xs sm:text-sm">
+                        <Clock className="w-4 h-4 mr-2.5 text-orange-500" />
+                        <span>Accelerated Intensive Sprint</span>
                       </div>
-                      <div className="flex items-center text-slate-600">
-                        <div className="w-6 h-6 flex items-center justify-center mr-3">
-                          <GraduationCap className="w-5 h-5 text-slate-400" />
-                        </div>
-                        <span className="text-sm font-medium">1-on-1 Elite Mentorship</span>
+                      <div className="flex items-center text-zinc-300 text-xs sm:text-sm">
+                        <GraduationCap className="w-4 h-4 mr-2.5 text-orange-500" />
+                        <span>1-on-1 Senior Executive Mentorship</span>
                       </div>
-                      <div className="flex items-center text-slate-600">
-                        <div className="w-6 h-6 flex items-center justify-center mr-3">
-                          <Award className="w-5 h-5 text-slate-400" />
-                        </div>
-                        <span className="text-sm font-medium">Verified Credentials & LOR</span>
+                      <div className="flex items-center text-zinc-300 text-xs sm:text-sm">
+                        <Award className="w-4 h-4 mr-2.5 text-orange-500" />
+                        <span>Verified Credentials & Official LOR</span>
                       </div>
                     </div>
 
                     <button
                       onClick={() => router.push('/apply')}
-                      className="w-full py-3.5 bg-white border border-slate-200 text-slate-700 font-semibold rounded-xl transition-all duration-300 hover:bg-slate-50 hover:border-teal-500 hover:text-teal-700 hover:shadow-sm flex justify-center items-center"
+                      className="uiverse-btn w-full py-3 text-xs sm:text-sm font-normal tracking-wide"
                     >
-                      Select Track
+                      <div className="a l" />
+                      <div className="a r" />
+                      <div className="a t" />
+                      <div className="a b" />
+                      <div className="text flex items-center justify-center">
+                        <span>Select Track & Apply</span>
+                        <ChevronRight className="w-4 h-4 ml-1.5 text-orange-400" />
+                      </div>
                     </button>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             )}
           </div>
         </section>
 
-        {/* Program Durations Footnote */}
-        <section className="py-16 px-4 bg-white relative z-10 border-t border-slate-200">
-          <div className="max-w-4xl mx-auto text-center">
-            <h3 className="text-xl font-bold text-slate-900 mb-6">Program Framework</h3>
-            <div className="flex flex-wrap justify-center gap-3 mb-6">
+        {/* Program Duration & Footer Footnote */}
+        <section className="py-14 px-4 bg-zinc-950 relative z-10 border-t border-zinc-800">
+          <div className="max-w-4xl mx-auto text-center font-light">
+            <h3 className="text-lg font-normal text-white mb-5">Program Structure & Duration</h3>
+            <div className="flex flex-wrap justify-center gap-2.5 mb-5">
               {tenures.map((tenure) => (
                 <div
                   key={tenure.id}
-                  className="px-5 py-2.5 bg-slate-50 border border-slate-200 rounded-full text-slate-600 font-medium tracking-wide"
+                  className="px-4 py-1.5 bg-black border border-zinc-800 rounded-full text-zinc-300 text-xs tracking-wide hover:border-orange-500/50 hover:text-orange-400 transition-colors"
                 >
                   {tenure.label} Sprint
                 </div>
               ))}
             </div>
-            <p className="text-slate-500 text-sm max-w-2xl mx-auto">
-              All tracks are precisely structured to deliver maximum value through intensive, hands-on sprints, engineered for those who demand excellence in their professional journey.
+            <p className="text-zinc-400 text-xs max-w-xl mx-auto leading-relaxed">
+              All programs are engineered to deliver industry-recognized experience through intensive execution and direct mentorship.
             </p>
+
+            {/* Bottom Footer Admin Access Icon */}
+            <div className="mt-8 pt-6 border-t border-zinc-900/80 flex items-center justify-center">
+              <button
+                onClick={() => router.push('/admin/login')}
+                className="p-2.5 rounded-full bg-zinc-900/60 border border-zinc-800 text-zinc-500 transition-all duration-300 hover:border-orange-500/50 hover:text-orange-400 hover:bg-black hover:shadow-[0_0_15px_rgba(255,102,0,0.2)] group"
+                title="Admin Access"
+                aria-label="Admin Access"
+              >
+                <Shield className="w-4 h-4 transition-transform duration-300 group-hover:scale-110" />
+              </button>
+            </div>
           </div>
         </section>
+
 
       </div>
     </div>

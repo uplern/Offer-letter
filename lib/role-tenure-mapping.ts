@@ -10,19 +10,11 @@ export interface RoleTenureMapping {
 }
 
 export const ROLE_TENURE_MAPPING: RoleTenureMapping = {
-  'HR': {
-    name: 'Human Resources',
-    availableTenures: [1, 2], // 1M, 2M
+  'RSBPE': {
+    name: 'Recruitment Specialist and Business Partnership Executive',
+    availableTenures: [65], // 65 Days
     templates: {
-      1: 'HR_1M',
-      2: 'HR_2M'
-    }
-  },
-  'BD': {
-    name: 'Business Development',
-    availableTenures: [2], // 2M
-    templates: {
-      2: 'BD_2M'
+      65: 'RSBPE_65D'
     }
   }
 }
