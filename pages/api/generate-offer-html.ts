@@ -4,6 +4,7 @@ import chromium from '@sparticuz/chromium'
 import path from 'path'
 import fs from 'fs'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { PDFDocument } from 'pdf-lib'
 
 // Disable body parser and increase response size limit
 export const config = {
@@ -13,6 +14,52 @@ export const config = {
         },
         responseLimit: false,
     },
+}
+
+/**
+ * Merges a background PDF (bg) with a content PDF (fg).
+ * Each page of fg is overlaid on top of the corresponding page of bg.
+ * If bg has fewer pages than fg, the last bg page is repeated.
+ */
+async function mergeWithBackground(bgPdfBytes: Uint8Array, fgPdfBytes: Uint8Array): Promise<Uint8Array> {
+    const bgDoc = await PDFDocument.load(bgPdfBytes)
+    const fgDoc = await PDFDocument.load(fgPdfBytes)
+
+    const outputDoc = await PDFDocument.create()
+    const fgPageCount = fgDoc.getPageCount()
+    const bgPageCount = bgDoc.getPageCount()
+
+    for (let i = 0; i < fgPageCount; i++) {
+        // Use last bg page if fg has more pages than bg
+        const bgPageIndex = Math.min(i, bgPageCount - 1)
+
+        // Embed the bg page into outputDoc
+        const [embeddedBgPage] = await outputDoc.embedPdf(bgDoc, [bgPageIndex])
+
+        // Create a new output page with the bg page dimensions
+        const bgPage = bgDoc.getPage(bgPageIndex)
+        const { width, height } = bgPage.getSize()
+        const newPage = outputDoc.addPage([width, height])
+
+        // Draw background first
+        newPage.drawPage(embeddedBgPage, {
+            x: 0,
+            y: 0,
+            width,
+            height,
+        })
+
+        // Embed the fg (content) page on top
+        const [embeddedFgPage] = await outputDoc.embedPdf(fgDoc, [i])
+        newPage.drawPage(embeddedFgPage, {
+            x: 0,
+            y: 0,
+            width,
+            height,
+        })
+    }
+
+    return outputDoc.save()
 }
 
 export default async function handler(
@@ -31,7 +78,6 @@ export default async function handler(
             return res.status(400).json({ error: 'Missing user reference' })
         }
 
-        // const supabaseAdmin = createAdminClient()
         const { data: user, error: userError } = await supabaseAdmin
             .from('users')
             .select('*')
@@ -42,11 +88,7 @@ export default async function handler(
             return res.status(404).json({ error: 'Application record not found' })
         }
 
-        // Optional: Verify name matches to prevent spoofing (fuzzy match or exact)
-        // For now, we trust the DB record and use IT for the name if desired, 
-        // or just verify the provided name matches the DB name.
         const dbName = `${user.first_name} ${user.last_name}`.trim()
-        // We can enforce using the DB name to ensure the offer letter matches the application
         const finalCandidateName = dbName
 
         // Default to RSBPE_65D if no template code provided (fallback)
@@ -59,16 +101,15 @@ export default async function handler(
 
         let htmlContent = fs.readFileSync(templatePath, 'utf8')
 
-        // Get absolute paths for images
         const publicDir = path.join(process.cwd(), 'public')
 
         // Helper to read image as base64
-        const getImageBase64 = (relativePath: string) => {
+        const getImageBase64 = (relativePath: string, mimeType = 'image/png') => {
             try {
                 const fullPath = path.join(publicDir, relativePath)
                 if (fs.existsSync(fullPath)) {
                     const file = fs.readFileSync(fullPath)
-                    return `data:image/png;base64,${file.toString('base64')}`
+                    return `data:${mimeType};base64,${file.toString('base64')}`
                 }
             } catch (e) {
                 console.warn(`Image not found: ${relativePath}`)
@@ -76,8 +117,6 @@ export default async function handler(
             return ''
         }
 
-        const logoBase64 = getImageBase64('templates/temp/logo.png')
-        const bgBase64 = getImageBase64('templates/temp/background.png')
         const sealBase64 = getImageBase64('templates/temp/seal&sign.png')
 
         const currentDate = date || new Date().toLocaleDateString('en-IN', {
@@ -86,29 +125,27 @@ export default async function handler(
             year: 'numeric'
         })
 
-        // Replace placeholders
+        // Replace placeholders — no logo, no background image (bg comes from PDF merge)
         htmlContent = htmlContent
             .replace(/{{Name}}/g, finalCandidateName)
             .replace(/{{Date}}/g, currentDate)
-            .replace(/{{LOGO_IMAGE}}/g, logoBase64)
-            .replace(/{{BACKGROUND_IMAGE}}/g, bgBase64)
+            .replace(/{{LOGO_IMAGE}}/g, '')        // logo removed
+            .replace(/{{BACKGROUND_IMAGE}}/g, '')  // no CSS bg; real bg injected via PDF merge
             .replace(/{{SEAL_IMAGE}}/g, sealBase64)
 
         // Launch Puppeteer
         console.log('Launching Puppeteer...')
 
-        // Configure for serverless (Vercel) vs Local
         const isLocal = process.env.NODE_ENV === 'development'
 
         let browser: any
         if (isLocal) {
-            // Robust local Chrome path detection for Windows
             const possiblePaths = [
                 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
                 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
-                process.env.CHROME_PATH // Allow override via env var
+                process.env.CHROME_PATH
             ].filter(Boolean) as string[]
-            
+
             let executablePath: string | undefined
             for (const p of possiblePaths) {
                 if (fs.existsSync(p)) {
@@ -123,13 +160,12 @@ export default async function handler(
 
             console.log(`Launching browser with executablePath: ${executablePath || 'default'}`)
             browser = await puppeteer.launch({
-                args: isLocal ? ['--no-sandbox', '--disable-setuid-sandbox'] : (chromium as any).args,
+                args: ['--no-sandbox', '--disable-setuid-sandbox'],
                 defaultViewport: (chromium as any).defaultViewport,
                 executablePath,
                 headless: true,
             } as any)
         } else {
-            // Production (Vercel)
             const prodPath = await chromium.executablePath()
             console.log(`Launching prod browser with path: ${prodPath}`)
             browser = await puppeteer.launch({
@@ -140,6 +176,8 @@ export default async function handler(
             } as any)
         }
 
+        let finalPdfBytes: Uint8Array
+
         try {
             const page = await browser.newPage()
             page.setDefaultTimeout(30_000)
@@ -149,7 +187,6 @@ export default async function handler(
                 const url = request.url()
                 const resourceType = request.resourceType?.() || ''
 
-                // Templates include Google Fonts (@import). External requests can be slow or hang.
                 if (
                     url.startsWith('http') &&
                     (resourceType === 'stylesheet' || resourceType === 'font') &&
@@ -168,8 +205,8 @@ export default async function handler(
                 timeout: 30_000,
             })
 
-            console.log('Generating PDF...')
-            const pdfBuffer = await page.pdf({
+            console.log('Generating content PDF...')
+            const contentPdfBuffer = await page.pdf({
                 format: 'A4',
                 printBackground: true,
                 margin: {
@@ -180,27 +217,44 @@ export default async function handler(
                 }
             })
 
-            console.log(`PDF generated successfully. Size: ${pdfBuffer.length} bytes`)
+            console.log(`Content PDF generated. Size: ${contentPdfBuffer.length} bytes`)
 
-            // Send PDF
-            const filename = `Offer_Letter_${finalCandidateName.replace(/\s+/g, '_')}.pdf`
-            res.setHeader('Content-Type', 'application/pdf')
-            res.setHeader('Content-Disposition', `attachment; filename="${filename}"`)
-            res.setHeader('Content-Length', pdfBuffer.length)
-            res.end(pdfBuffer)
-            console.log('PDF sent to client')
+            // --- Merge with bg_ofl.pdf background ---
+            const bgPdfPath = path.join(publicDir, 'templates', 'temp', 'bg_ofl.pdf')
+
+            if (fs.existsSync(bgPdfPath)) {
+                console.log('Merging with background PDF (bg_ofl.pdf)...')
+                const bgPdfBytes = fs.readFileSync(bgPdfPath)
+                finalPdfBytes = await mergeWithBackground(
+                    new Uint8Array(bgPdfBytes),
+                    new Uint8Array(contentPdfBuffer)
+                )
+                console.log(`Merged PDF size: ${finalPdfBytes.length} bytes`)
+            } else {
+                console.warn('bg_ofl.pdf not found — returning plain content PDF')
+                finalPdfBytes = new Uint8Array(contentPdfBuffer)
+            }
+
         } finally {
             if (browser) {
                 await browser.close()
             }
         }
 
+        // Send final PDF
+        const filename = `Offer_Letter_${finalCandidateName.replace(/\s+/g, '_')}.pdf`
+        res.setHeader('Content-Type', 'application/pdf')
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`)
+        res.setHeader('Content-Length', finalPdfBytes.length)
+        res.end(Buffer.from(finalPdfBytes))
+        console.log('Final merged PDF sent to client')
+
     } catch (error: any) {
         console.error('CRITICAL Error generating PDF:', error)
-        res.status(500).json({ 
-            error: 'Failed to generate PDF', 
+        res.status(500).json({
+            error: 'Failed to generate PDF',
             details: error.message,
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined 
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
         })
     }
 }
