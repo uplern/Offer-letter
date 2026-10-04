@@ -16,6 +16,13 @@ export const ROLE_TENURE_MAPPING: RoleTenureMapping = {
     templates: {
       65: 'RSBPE_65D'
     }
+  },
+  'HR': {
+    name: 'Human Resources',
+    availableTenures: [1], // 1 Month
+    templates: {
+      1: 'HR_1M'
+    }
   }
 }
 
