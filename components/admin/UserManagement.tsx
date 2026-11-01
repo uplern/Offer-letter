@@ -604,6 +604,7 @@ export default function UserManagement() {
                               src={url}
                               alt={label}
                               fill
+                              unoptimized
                               sizes="(min-width: 1280px) 18vw, (min-width: 768px) 30vw, 80vw"
                               className="object-cover transition-transform duration-500 group-hover:scale-110 cursor-zoom-in"
                               onClick={() => window.open(url, '_blank')}

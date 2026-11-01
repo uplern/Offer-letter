@@ -1,7 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['localhost', 'ikrzoijbhdkbmkeyuqlg.supabase.co', 'qavtrohtyndiuaxriygz.supabase.co'],
+    domains: [
+      'localhost',
+      'wajmzidupadjhptmxnvn.supabase.co',
+      'ikrzoijbhdkbmkeyuqlg.supabase.co',
+      'qavtrohtyndiuaxriygz.supabase.co',
+    ],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.supabase.co',
+      },
+    ],
   },
   async headers() {
     return [
