@@ -23,6 +23,13 @@ export const ROLE_TENURE_MAPPING: RoleTenureMapping = {
     templates: {
       1: 'HR_1M'
     }
+  },
+  'BPEI': {
+    name: 'Business Partnership Executive Intern',
+    availableTenures: [45], // 45 Days
+    templates: {
+      45: 'BPEI_45D'
+    }
   }
 }
 

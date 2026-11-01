@@ -27,10 +27,14 @@ export default function ApplyPage() {
     } catch (error) {
       console.error('Error fetching data:', error)
       setRoles([
-        { id: '1', name: 'Recruitment Specialist and Business Partnership Executive', code: 'RSBPE', created_at: new Date().toISOString() }
+        { id: '1', name: 'Recruitment Specialist and Business Partnership Executive', code: 'RSBPE', created_at: new Date().toISOString() },
+        { id: '2', name: 'Human Resources', code: 'HR', created_at: new Date().toISOString() },
+        { id: '3', name: 'Business Partnership Executive Intern', code: 'BPEI', created_at: new Date().toISOString() }
       ])
       setTenures([
-        { id: '1', label: '65 Days', months: 65, created_at: new Date().toISOString() }
+        { id: '1', label: '65 Days', months: 65, created_at: new Date().toISOString() },
+        { id: '2', label: '1 Month', months: 1, created_at: new Date().toISOString() },
+        { id: '3', label: '45 Days', months: 45, created_at: new Date().toISOString() }
       ])
     } finally {
       setLoading(false)

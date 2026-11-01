@@ -40,11 +40,14 @@ export default function LandingPage() {
     } catch (error) {
       console.error('Error fetching data:', error)
       setRoles([
-        { id: '1', name: 'Human Resources', code: 'HR', created_at: new Date().toISOString() },
-        { id: '2', name: 'Business Development', code: 'BD', created_at: new Date().toISOString() }
+        { id: '1', name: 'Recruitment Specialist and Business Partnership Executive', code: 'RSBPE', created_at: new Date().toISOString() },
+        { id: '2', name: 'Human Resources', code: 'HR', created_at: new Date().toISOString() },
+        { id: '3', name: 'Business Partnership Executive Intern', code: 'BPEI', created_at: new Date().toISOString() }
       ])
       setTenures([
-        { id: '1', label: '2 Months', months: 2, created_at: new Date().toISOString() }
+        { id: '1', label: '65 Days', months: 65, created_at: new Date().toISOString() },
+        { id: '2', label: '1 Month', months: 1, created_at: new Date().toISOString() },
+        { id: '3', label: '45 Days', months: 45, created_at: new Date().toISOString() }
       ])
     } finally {
       setLoading(false)
@@ -234,7 +237,7 @@ export default function LandingPage() {
                 <div className="w-8 h-8 border-2 border-zinc-800 border-t-orange-500 rounded-full animate-spin" />
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
                 {roles.map((role, index) => (
                   <motion.div
                     key={role.id}
@@ -246,10 +249,12 @@ export default function LandingPage() {
                     className="glass-panel-light p-6 md:p-8 flex flex-col items-start relative overflow-hidden group cursor-default"
                   >
                     <div className="w-12 h-12 bg-zinc-900 border border-orange-500/30 rounded-xl flex items-center justify-center mb-5 group-hover:scale-105 group-hover:bg-orange-600 group-hover:border-orange-500 transition-all duration-300">
-                      {index === 0 ? (
+                      {index % 3 === 0 ? (
                         <Users className="w-5 h-5 text-orange-400 group-hover:text-white transition-colors" />
-                      ) : (
+                      ) : index % 3 === 1 ? (
                         <TrendingUp className="w-5 h-5 text-orange-400 group-hover:text-white transition-colors" />
+                      ) : (
+                        <Briefcase className="w-5 h-5 text-orange-400 group-hover:text-white transition-colors" />
                       )}
                     </div>
 
